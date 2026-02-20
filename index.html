@@ -366,17 +366,18 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 2
 
     <div class="legend">
       <div class="leg-t">Legend</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c65)"></div><span style="color:var(--c65);font-size:10px">■</span>&nbsp;Bus 65 (accident)</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c131)"></div><span style="color:var(--c131);font-size:10px">■</span>&nbsp;Bus 131 (congestion)</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c900)"></div><span style="color:var(--c900);font-size:10px">■</span>&nbsp;Bus 900 (weather)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c65)"></div>Bus 65 (accident)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c131)"></div>Bus 131 (congestion)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c900)"></div>Bus 900 (weather)</div>
       <div style="border-top:1px solid var(--border);margin:6px 0"></div>
-      <div class="leg-r"><div class="lline" style="background:#aaa;opacity:.5"></div>Original route (faded solid)</div>
-      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #555;opacity:.6;flex-shrink:0"></div>cuOPT proposed (dashed)</div>
-      <div class="leg-r"><div class="lline" style="background:#16a34a"></div><span style="color:#16a34a;font-size:10px">✅</span>&nbsp;Deployed route (solid green)</div>
+      <div class="leg-r" style="font-size:10px;color:var(--muted);font-style:italic">After ⚡ cuOPT Re-route:</div>
+      <div class="leg-r"><div style="width:22px;height:0;border-top:4px dashed #888;flex-shrink:0"></div>Blocked section (dotted)</div>
+      <div class="leg-r"><div style="width:22px;height:0;border-top:4px dashed #555;flex-shrink:0"></div>Bypass proposed (dotted)</div>
+      <div class="leg-r"><div class="lline" style="background:#16a34a"></div><span style="color:#16a34a">✅</span> Bypass deployed (green)</div>
       <div style="border-top:1px solid var(--border);margin:6px 0"></div>
       <div class="leg-r"><span style="font-size:13px">🚌</span>Live Bus (GPS)</div>
       <div class="leg-r"><div class="ldot" style="background:var(--danger)"></div>Accident zone</div>
-      <div class="leg-r"><div class="ldot" style="background:#0ea5e9"></div>Weather zone</div>
+      <div class="leg-r"><div class="ldot" style="background:#0ea5e9"></div>Weather / flood zone</div>
     </div>
 
     <!-- Computing overlay -->
@@ -499,35 +500,88 @@ window.filterInc=function(type){
 
 /* ==============================
    ROUTE DATA
+   splitIdx: index in wp[] where incident zone STARTS (before = 0..splitIdx, incident = splitIdx..splitEndIdx, after = splitEndIdx..end)
+   splitEndIdx: index where incident zone ENDS and normal route resumes
+   bypassWp: extra road points that go AROUND the incident, connecting wp[splitIdx] to wp[splitEndIdx]
 ============================== */
 var ROUTES={
   '65':{
-    color:'#dc2626', label:'Bus 65 — Tampines to Bedok (via ECP)',
-    wp:[[1.3521,103.9401],[1.3350,103.9150],[1.3181,103.9000],[1.3100,103.8850],[1.3081,103.8680],[1.3081,103.8518]],
-    altWp:[[1.3521,103.9401],[1.3480,103.9200],[1.3420,103.9000],[1.3340,103.8880],[1.3260,103.8760],[1.3200,103.8660],[1.3081,103.8518]],
-    inc:{lat:1.3081,lng:103.8680,type:'acc',emoji:'🚨',desc:'3-vehicle collision — 2 lanes blocked'},
+    color:'#dc2626',
+    label:'Bus 65 — Tampines Int → Bedok Int (via ECP)',
+    // Full route waypoints
+    wp:[
+      [1.3521,103.9401], // 0 Tampines Int
+      [1.3350,103.9150], // 1
+      [1.3181,103.9000], // 2
+      [1.3100,103.8850], // 3  ← incident starts here
+      [1.3081,103.8680], // 4  ← accident site
+      [1.3050,103.8600], // 5  ← incident ends here
+      [1.3081,103.8518]  // 6 Bedok Int
+    ],
+    splitIdx:3, splitEndIdx:5,
+    // Bypass: from wp[3] go via Bedok North Rd, rejoin at wp[5]
+    bypassWp:[
+      [1.3100,103.8850], // join point from normal route
+      [1.3160,103.8780],
+      [1.3140,103.8680],
+      [1.3080,103.8620],
+      [1.3050,103.8600]  // rejoin normal route
+    ],
+    inc:{lat:1.3081,lng:103.8680,type:'acc',emoji:'🚨',desc:'3-vehicle collision — 2 lanes blocked on ECP'},
     delay:18, pax:1240, buses:8, solveRoutes:6820,
-    altLabel:'Bedok North Rd (avoids ECP)',
+    altLabel:'Bedok North Rd bypass (avoids ECP accident)',
     kmOrig:14.2, kmAlt:11.8,
     fuelSave:18.40, ltaPenalty:162, passPenalty:0, overtime:0
   },
   '131':{
-    color:'#7c3aed', label:'Bus 131 — Toa Payoh to Yishun (via CTE)',
-    wp:[[1.3320,103.8480],[1.3480,103.8380],[1.3620,103.8260],[1.3780,103.8200],[1.4100,103.8280],[1.4296,103.8353]],
-    altWp:[[1.3320,103.8480],[1.3420,103.8310],[1.3540,103.8140],[1.3700,103.8060],[1.3900,103.8150],[1.4296,103.8353]],
-    inc:{lat:1.3620,lng:103.8260,type:'trf',emoji:'🔴',desc:'CTE congestion 6km — signal fault'},
+    color:'#7c3aed',
+    label:'Bus 131 — Toa Payoh Int → Yishun Int (via CTE)',
+    wp:[
+      [1.3320,103.8480], // 0 Toa Payoh Int
+      [1.3480,103.8380], // 1  ← incident starts (CTE on-ramp)
+      [1.3620,103.8260], // 2  ← congestion zone
+      [1.3780,103.8200], // 3  ← incident ends (PIE junction)
+      [1.4100,103.8280], // 4
+      [1.4296,103.8353]  // 5 Yishun Int
+    ],
+    splitIdx:1, splitEndIdx:3,
+    // Bypass: Upper Thomson Rd off CTE, avoids Braddell–PIE congestion
+    bypassWp:[
+      [1.3480,103.8380], // join
+      [1.3520,103.8260],
+      [1.3580,103.8140],
+      [1.3700,103.8090],
+      [1.3780,103.8200]  // rejoin
+    ],
+    inc:{lat:1.3620,lng:103.8260,type:'trf',emoji:'🔴',desc:'CTE congestion 6km — Braddell to PIE junction'},
     delay:22, pax:980, buses:7, solveRoutes:5940,
-    altLabel:'Upper Thomson Rd (avoids CTE)',
+    altLabel:'Upper Thomson Rd bypass (avoids CTE congestion)',
     kmOrig:16.8, kmAlt:18.1,
     fuelSave:23.60, ltaPenalty:198, passPenalty:0, overtime:45
   },
   '900':{
-    color:'#0891b2', label:'Bus 900 — Woodlands to City Hall',
-    wp:[[1.4382,103.7890],[1.4200,103.7960],[1.4044,103.7996],[1.3800,103.7850],[1.3500,103.8000],[1.2897,103.8516]],
-    altWp:[[1.4382,103.7890],[1.4500,103.8060],[1.4380,103.8220],[1.4100,103.8300],[1.3800,103.8200],[1.3500,103.8200],[1.2897,103.8516]],
-    inc:{lat:1.4044,lng:103.7996,type:'wth',emoji:'⛈️',desc:'Flash flooding — road partially submerged'},
+    color:'#0891b2',
+    label:'Bus 900 — Woodlands Int → City Hall',
+    wp:[
+      [1.4382,103.7890], // 0 Woodlands Int
+      [1.4200,103.7960], // 1  ← incident starts (Woodlands Ave 12)
+      [1.4044,103.7996], // 2  ← flood site
+      [1.3900,103.7900], // 3  ← incident ends
+      [1.3500,103.8000], // 4
+      [1.2897,103.8516]  // 5 City Hall
+    ],
+    splitIdx:1, splitEndIdx:3,
+    // Bypass: Admiralty Rd East, avoids flooded Woodlands Ave 12
+    bypassWp:[
+      [1.4200,103.7960], // join
+      [1.4280,103.8060],
+      [1.4200,103.8180],
+      [1.4050,103.8100],
+      [1.3900,103.7900]  // rejoin
+    ],
+    inc:{lat:1.4044,lng:103.7996,type:'wth',emoji:'⛈️',desc:'Flash flooding — Woodlands Ave 12 partially submerged'},
     delay:25, pax:1450, buses:10, solveRoutes:8210,
-    altLabel:'Admiralty Rd East (avoids flood zone)',
+    altLabel:'Admiralty Rd East bypass (avoids flood zone)',
     kmOrig:19.4, kmAlt:21.2,
     fuelSave:16.10, ltaPenalty:225, passPenalty:290, overtime:68
   }
@@ -649,40 +703,46 @@ window.deployRoute=function(k){
   if(doneRoutes[k])return;
   doneRoutes[k]=true;
 
-  // --- MAP UPDATES ---
   var r=ROUTES[k];
   var rd=routeData[k];
 
-  // 1. Remove (hide) the faded original disrupted route line
-  if(rd&&rd.origPl){
-    rd.origPl.remove();
+  // 1. Remove the dotted incident (blocked) segment — no longer needed
+  if(rd&&rd.incidentPl){
+    rd.incidentPl.remove();
+    rd.incidentPl=null;
   }
 
-  // 2. Convert the dashed cuOPT proposed line → solid green deployed route
-  if(rd&&rd.altPl){
-    rd.altPl.setStyle({
-      color:'#16a34a',   // solid green
-      weight:5,
+  // 2. Convert the dotted bypass → solid GREEN (active deployed route)
+  if(rd&&rd.bypassPl){
+    rd.bypassPl.setStyle({
+      color:'#16a34a',
+      weight:6,
       opacity:1,
-      dashArray:null     // solid — no dash
+      dashArray:null   // solid
     });
-    rd.altPl.bindPopup(pop('✅ DEPLOYED — Bus '+k,
-      '<span style="color:#16a34a"><strong>cuOPT Active Route</strong></span><br>'
-      +r.altLabel+'<br>Saving S$'+calcSaving(k)+'/trip · Buses now on this path'));
+    rd.bypassPl.bindPopup(pop(
+      '✅ DEPLOYED — Bus '+k+' Bypass',
+      '<strong style="color:#16a34a">cuOPT Active Bypass</strong><br>'
+      +r.altLabel+'<br>'
+      +'<span style="color:#16a34a">Solid green = live active route</span><br>'
+      +'Saving S$'+calcSaving(k)+'/trip'));
   }
 
   // 3. Update map hint
-  document.getElementById('maphint').textContent='Bus '+k+' ✅ deployed — solid green = active cuOPT route';
+  document.getElementById('maphint').textContent=
+    'Bus '+k+' ✅ Deployed — solid green = active bypass | solid '+r.color+' = normal route sections';
 
-  // --- UI / CHAT UPDATES ---
+  // 4. Update sidebar button
   var btn=document.getElementById('btn-'+k);
   if(btn){btn.textContent='✅ Deployed';btn.classList.add('done');btn.disabled=true;}
 
   updateStats();
-  toast('Route Deployed ✅','Bus '+k+' active. Route is now solid green on the map.','var(--accent2)');
+  toast('Route Deployed ✅',
+    'Bus '+k+' bypass now live — solid green on map. Saving S$'+calcSaving(k)+'/trip.',
+    'var(--accent2)');
   addAi(
-    '✅ <strong>Bus '+k+' re-route is now LIVE.</strong> '
-    +'On the map, the route is now shown as a <strong style="color:#16a34a">solid green line</strong> — the cuOPT path is active.\n\n'
+    '✅ <strong>Bus '+k+' bypass is now LIVE!</strong><br><br>'
+    +'On the map: the bypass section is now a <strong style="color:#16a34a">solid green line</strong>, connecting directly to the solid <span style="color:'+r.color+'">■</span> sections of the route on either side of the incident.<br><br>'
     +'Drivers notified via MDT. Estimated saving: <strong>S$'+calcSaving(k)+'/trip</strong>',
     true
   );
@@ -702,19 +762,7 @@ window.deployRoute=function(k){
   document.head.appendChild(s);
 })();
 
-/* ==============================
-   OSRM road-following route
-============================== */
-function fetchRoad(wp,cb){
-  var coords=wp.map(function(p){return p[1]+','+p[0];}).join(';');
-  fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.routes&&d.routes[0]){
-        cb(d.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];}),d.routes[0].distance);
-      } else {cb(wp,0);}
-    }).catch(function(){cb(wp,0);});
-}
+/* fetchRoad defined above with loadRouteOnMap */
 
 /* ==============================
    MAP INIT
@@ -777,16 +825,60 @@ function addMarker(lat,lng,type,emoji,title,desc,lg){
   L.marker([lat,lng],{icon:eIcon(emoji,22)}).bindPopup(pop(emoji+' '+title,desc)).addTo(lg);
 }
 
-/* --- Load original route on map --- */
+/* ==============================
+   OSRM road-following route
+============================== */
+function fetchRoad(wp,cb){
+  // Need at least 2 distinct points
+  if(!wp||wp.length<2){cb(wp||[]);return;}
+  var coords=wp.map(function(p){return p[1]+','+p[0];}).join(';');
+  fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.routes&&d.routes[0]){
+        cb(d.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];}));
+      } else {cb(wp);}
+    }).catch(function(){cb(wp);});
+}
+
+/* Helper: split an OSRM path array into [before, incident, after] portions
+   using splitFracStart and splitFracEnd (0..1) along the path */
+function splitPath(path, fracStart, fracEnd){
+  var n=path.length;
+  var iS=Math.max(1, Math.floor(fracStart*n));
+  var iE=Math.min(n-1, Math.floor(fracEnd*n));
+  if(iS>=iE){ iS=Math.floor(n*0.3); iE=Math.floor(n*0.7); }
+  return {
+    before:  path.slice(0, iS+1),       // includes the split point
+    incident:path.slice(iS, iE+1),      // the blocked segment
+    after:   path.slice(iE)             // from end of incident to terminus
+  };
+}
+
+/* --- Load original route: fetch full OSRM path, draw as one solid coloured line --- */
 function loadRouteOnMap(k){
   var r=ROUTES[k];
-  fetchRoad(r.wp,function(path){
-    routeData[k]={origPath:path,altPath:null,origPl:null,altPl:null,busMarkers:[]};
-    var pl=L.polyline(path,{color:r.color,weight:5,opacity:.85,smoothFactor:1})
-      .bindPopup(pop('🚌 '+r.label,'<span style="color:'+r.color+'">⚠ DISRUPTED</span> · '+r.buses+' buses · +'+r.delay+' min delay<br><small>Click ⚡ cuOPT Re-route on the left panel to optimise</small>'))
+  fetchRoad(r.wp, function(fullPath){
+    routeData[k]={
+      fullPath:   fullPath,
+      origPl:     null,
+      beforePl:   null,
+      afterPl:    null,
+      incidentPl: null,
+      bypassPl:   null,
+      busMarkers: [],
+      // fractions along fullPath where incident zone starts/ends
+      // based on position of splitIdx/splitEndIdx in wp[]
+      fracStart: r.splitIdx / (r.wp.length-1),
+      fracEnd:   r.splitEndIdx / (r.wp.length-1)
+    };
+    var pl=L.polyline(fullPath,{color:r.color,weight:5,opacity:.9,smoothFactor:1})
+      .bindPopup(pop('🚌 '+r.label,
+        '<span style="color:'+r.color+'">⚠ DISRUPTED</span> · '+r.buses+' buses · +'+r.delay+' min delay<br>'
+        +'<small>Click <b>⚡ cuOPT Re-route</b> to see bypass options</small>'))
       .addTo(lgRoutes);
     routeData[k].origPl=pl;
-    spawnBuses(k,path);
+    spawnBuses(k, fullPath);
   });
 }
 
@@ -824,13 +916,13 @@ function startBusAnim(marker,path,startFrac){
   marker._frac=frac;
 }
 
-function switchBusPath(k,newPath){
-  if(!routeData[k])return;
+function switchBusPath(k,combinedPath){
+  if(!routeData[k]||!combinedPath||combinedPath.length<2) return;
   routeData[k].busMarkers.forEach(function(m){
-    if(m._raf)cancelAnimationFrame(m._raf);
-    m._path=newPath;
-    startBusAnim(m,newPath,Math.random());
-    m.setPopupContent(pop('🚌 Bus '+k,'<span style="color:#16a34a">✅ cuOPT Re-route Active — ON TIME</span>'));
+    if(m._raf) cancelAnimationFrame(m._raf);
+    startBusAnim(m, combinedPath, Math.random());
+    m.setPopupContent(pop('🚌 Bus '+k,
+      '<span style="color:#16a34a">✅ Bypass route active — on time</span>'));
   });
 }
 
@@ -878,23 +970,34 @@ window.selInc=function(k,el){
 
 /* ==============================
    REROUTE FLOW
+   Uses the already-fetched fullPath and splits it at the incident fractions.
+   Only needs ONE new OSRM fetch: the bypass segment.
+   States:
+     Before reroute:  one solid full-colour line
+     After reroute:   solid before + dotted incident (same colour) + solid after + dotted bypass (same colour)
+     After deploy:    solid before + solid green bypass + solid after  (incident segment removed)
 ============================== */
 window.doReroute=function(k){
-  if(rerouteDone[k])return;
+  if(rerouteDone[k]) return;
   var r=ROUTES[k];
+  var rd=routeData[k];
 
-  // Select card
+  // Select card visually
   var card=document.getElementById('card-'+k);
-  if(card){document.querySelectorAll('.ic').forEach(function(c){c.classList.remove('sel');});card.classList.add('sel');}
+  if(card){
+    document.querySelectorAll('.ic').forEach(function(c){c.classList.remove('sel');});
+    card.classList.add('sel');
+  }
 
   // Fly to incident zone
-  map.flyTo([r.inc.lat,r.inc.lng],13,{duration:1});
+  map.flyTo([r.inc.lat, r.inc.lng], 14, {duration:1});
 
-  // Computing overlay
+  // Show computing overlay
   var ov=document.getElementById('cov');
   var st=document.getElementById('covSt');
   var bar=document.getElementById('progBar');
-  bar.style.width='0%';ov.classList.add('show');
+  bar.style.width='0%';
+  ov.classList.add('show');
 
   var steps=[
     'Loading LTA DataMall live traffic feed...',
@@ -903,65 +1006,95 @@ window.doReroute=function(k){
     'Building travel-time cost matrix...',
     'GPU parallel solving — '+r.solveRoutes.toLocaleString()+' permutations...',
     'Applying headway & capacity constraints...',
-    '✅ Optimal alternate route found!'
+    '✅ Optimal bypass route found!'
   ];
-  var i=0;
+  var si=0;
   var iv=setInterval(function(){
-    if(i<steps.length){
-      st.textContent=steps[i];
-      bar.style.width=Math.round((i+1)/steps.length*100)+'%';
-      i++;
+    if(si<steps.length){
+      st.textContent=steps[si];
+      bar.style.width=Math.round((si+1)/steps.length*100)+'%';
+      si++;
     } else {
       clearInterval(iv);
-      var ms=350+Math.floor(Math.random()*450);
-      document.getElementById('solveT').textContent=(ms/1000).toFixed(2)+'s';
+      document.getElementById('solveT').textContent=(0.35+Math.random()*0.45).toFixed(2)+'s';
 
-      fetchRoad(r.altWp,function(altPath){
+      // Fetch ONLY the bypass segment via OSRM
+      fetchRoad(r.bypassWp, function(bypassPath){
         ov.classList.remove('show');
         rerouteDone[k]=true;
 
-        // Keep original as solid faded line (same colour) — solid so user can compare vs dashed cuOPT
-        if(routeData[k]&&routeData[k].origPl){
-          routeData[k].origPl.setStyle({color:r.color,weight:4,opacity:.35,dashArray:null});
-          routeData[k].origPl.bindPopup(pop('Original Route — Bus '+k,'<span style="color:'+r.color+'">⚠ DISRUPTED (pre-cuOPT)</span><br><small>Faded solid = original path</small>'));
+        // Split the cached full path into before / incident / after
+        var segs=splitPath(rd.fullPath, rd.fracStart, rd.fracEnd);
+
+        // 1. Remove the original solid full line
+        if(rd.origPl){ rd.origPl.remove(); rd.origPl=null; }
+
+        // 2. Draw BEFORE segment — solid, original colour (route is normal here)
+        rd.beforePl=L.polyline(segs.before,{
+          color:r.color, weight:5, opacity:.9, smoothFactor:1
+        }).bindPopup(pop('🚌 Bus '+k+' — Normal section','Unaffected portion of route'))
+          .addTo(lgRoutes);
+
+        // 3. Draw AFTER segment — solid, original colour (route is normal here)
+        if(segs.after && segs.after.length>1){
+          rd.afterPl=L.polyline(segs.after,{
+            color:r.color, weight:5, opacity:.9, smoothFactor:1
+          }).bindPopup(pop('🚌 Bus '+k+' — Normal section','Unaffected portion of route'))
+            .addTo(lgRoutes);
         }
 
-        // Draw cuOPT re-route: SAME colour, dashed = proposed but not yet deployed
-        var cuoptPl=L.polyline(altPath,{color:r.color,weight:5,opacity:.95,dashArray:'14,8',smoothFactor:1})
-          .bindPopup(pop('⚡ cuOPT Proposed Re-route — Bus '+k,'<strong style="color:'+r.color+'">'+r.altLabel+'</strong><br>Dashed = proposed, not yet deployed<br>Saving S$'+calcSaving(k)+'/trip'))
+        // 4. Draw INCIDENT segment — same colour, DOTTED (shows the blocked portion of the route)
+        rd.incidentPl=L.polyline(segs.incident,{
+          color:r.color, weight:5, opacity:.75, dashArray:'9,7', smoothFactor:1
+        }).bindPopup(pop('⚠ Blocked — Bus '+k,
+          '<span style="color:'+r.color+'"><b>Dotted = disrupted section</b></span><br>'+r.inc.desc))
           .addTo(lgCuopt);
-        routeData[k].altPl=cuoptPl;
-        routeData[k].altPath=altPath;
 
-        // Fit map to show both
-        var bounds=L.latLngBounds(altPath);
-        if(routeData[k].origPath)bounds.extend(L.latLngBounds(routeData[k].origPath));
-        map.fitBounds(bounds.pad(0.12),{animate:true,duration:1.2});
+        // 5. Draw BYPASS segment — same colour, DOTTED (proposed detour around incident)
+        rd.bypassPl=L.polyline(bypassPath,{
+          color:r.color, weight:5, opacity:.95, dashArray:'14,7', smoothFactor:1
+        }).bindPopup(pop('⚡ cuOPT Bypass — Bus '+k,
+          '<b style="color:'+r.color+'">'+r.altLabel+'</b><br>'
+          +'Dotted = proposed, not yet deployed<br>'
+          +'Saving <b>S$'+calcSaving(k)+'</b>/trip · Click Deploy to activate'))
+          .addTo(lgCuopt);
 
-        // Migrate buses to new path
-        switchBusPath(k,altPath);
+        // Store bypass path for deploy step
+        rd.bypassPath=bypassPath;
+        rd.incidentSeg=segs.incident;
 
-        // Show savings in chat
-        document.getElementById('maphint').textContent='Bus '+k+' — faded solid = original disrupted route | dashed = cuOPT proposed re-route';
-        toast('cuOPT Route Ready','Bus '+k+' re-route computed. Review savings & deploy in chat.','#76b900');
+        // Zoom map to show the incident area + bypass side by side
+        var zonePts=segs.incident.concat(bypassPath);
+        map.fitBounds(L.latLngBounds(zonePts).pad(0.3), {animate:true, duration:1.2});
 
-        // Add chat message with savings panel
+        // Migrate buses to travel via bypass instead of incident segment
+        var activePath=segs.before.concat(bypassPath).concat(segs.after||[]);
+        switchBusPath(k, activePath);
+
+        // Update hints
+        document.getElementById('maphint').textContent=
+          'Bus '+k+': dotted = blocked section & bypass | same colour | deploy → green';
+        toast('cuOPT Bypass Ready',
+          'Bus '+k+': blocked section and bypass shown as dotted lines. Deploy in chat.',
+          '#76b900');
+
+        // Chat message
         var msgEl=addAi(
-          '✅ <strong>Bus '+k+' cuOPT re-route computed!</strong><br><br>'
-          +'On the map you can now see two lines in <strong style="color:'+r.color+'">'+r.color+' colour</strong>:<br>'
-          +'<span style="opacity:.5">━━━</span> <strong>Faded solid</strong> = original disrupted route<br>'
-          +'<span>╌╌╌</span> <strong>Dashed</strong> = cuOPT proposed re-route<br><br>'
-          +'Deploy below to convert the dashed line into a <strong style="color:#16a34a">solid green active route</strong>:',
+          '✅ <strong>Bus '+k+' cuOPT bypass computed!</strong><br><br>'
+          +'On the map you\'ll see the affected section of the route is now shown as a '
+          +'<b style="color:'+r.color+'">dotted line</b> — that\'s the blocked road. Alongside it, '
+          +'the cuOPT bypass road is also shown as a <b style="color:'+r.color+'">dotted line of the same colour</b>. '
+          +'The rest of the route on either side stays as a solid line.<br><br>'
+          +'Click <b>Deploy</b> below — the bypass dotted line turns '
+          +'<b style="color:#16a34a">solid green ✅</b> and the blocked section is removed:',
           true
         );
-        // Append savings panel to last bubble
-        var bub=msgEl.querySelector('.bub');
-        bub.insertAdjacentHTML('beforeend',savingsHTML(k));
+        msgEl.querySelector('.bub').insertAdjacentHTML('beforeend', savingsHTML(k));
         scrl();
         updateStats();
       });
     }
-  },290);
+  }, 290);
 };
 </script>
 </body>
