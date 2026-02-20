@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBST × NVIDIA cuOPT — Network Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --surface2: #f0f3f8;
+  --border: #dde3ef;
+  --accent: #0066cc;
+  --accent-light: #e8f0fb;
+  --accent2: #16a34a;
+  --accent2-light: #dcfce7;
+  --warning: #d97706;
+  --warning-light: #fef3c7;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --text: #0f172a;
+  --text2: #374151;
+  --muted: #6b7280;
+  --nvidia: #76b900;
+  --nvidia-light: #f0fce4;
+  --sbst: #e31837;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* HEADER */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 54px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; box-shadow: var(--shadow); z-index: 100; position: relative;
+}
+.header-left { display:flex; align-items:center; gap:14px; }
+.logo-sbst { font-family:'Space Mono',monospace; font-size:15px; font-weight:700; color:var(--sbst); letter-spacing:-0.5px; }
+.logo-divider { width:1px; height:24px; background:var(--border); }
+.nvidia-badge {
+  background:var(--nvidia-light); border:1px solid #b6e05a; border-radius:5px;
+  padding:3px 9px; font-family:'Space Mono',monospace; font-size:9px; color:#4a7c00; letter-spacing:1px; font-weight:700;
+}
+.header-center {
+  position:absolute; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px;
+  font-family:'Space Mono',monospace; font-size:11px; color:var(--muted);
+}
+.live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent2); box-shadow:0 0 0 2px var(--accent2-light); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.header-right { display:flex; align-items:center; gap:20px; }
+.time-display { font-family:'Space Mono',monospace; font-size:17px; color:var(--accent); letter-spacing:2px; font-weight:700; }
+.kpi-mini { display:flex; gap:20px; }
+.kpi-item { text-align:center; }
+.kpi-val { font-size:15px; font-weight:700; }
+.kpi-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+/* MAIN */
+.main { display:grid; grid-template-columns:268px 1fr 318px; flex:1; overflow:hidden; }
+/* LEFT */
+.left-panel { background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.section-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--surface2); }
+.tab-btn { flex:1; padding:9px 4px; background:none; border:none; border-bottom:2px solid transparent; color:var(--muted); font-size:10px; cursor:pointer; font-family:'Space Mono',monospace; letter-spacing:.5px; transition:all .2s; }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--surface); }
+.panel-header { padding:10px 16px; border-bottom:1px solid var(--border); font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between; background:var(--surface2); }
+.badge { background:var(--accent); color:#fff; border-radius:10px; padding:1px 7px; font-size:9px; font-weight:700; }
+.badge-warn { background:var(--warning); }
+.scroll-area { flex:1; overflow-y:auto; }
+.scroll-area::-webkit-scrollbar { width:4px; }
+.scroll-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.incident-card { padding:11px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background .15s; border-left:3px solid transparent; }
+.incident-card:hover { background:var(--surface2); }
+.incident-card.sel { background:var(--accent-light); border-left-color:var(--accent); }
+.inc-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.inc-type { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; padding:2px 7px; border-radius:3px; }
+.t-accident { background:var(--danger-light); color:var(--danger); }
+.t-roadworks { background:var(--warning-light); color:var(--warning); }
+.t-traffic { background:var(--accent-light); color:var(--accent); }
+.t-weather { background:#e0f2fe; color:#0369a1; }
+.inc-time { font-size:9px; color:var(--muted); font-family:'Space Mono',monospace; }
+.inc-desc { font-size:12px; color:var(--text2); line-height:1.4; }
+.inc-affected { font-size:10px; color:var(--muted); margin-top:3px; }
+.inc-affected strong { color:var(--warning); }
+.bus-line-item { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; cursor:pointer; transition:background .15s; }
+.bus-line-item:hover { background:var(--surface2); }
+.bus-num { width:38px; height:24px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; flex-shrink:0; }
+.bus-line-info { flex:1; }
+.bus-line-name { font-size:11px; font-weight:500; color:var(--text); }
+.bus-line-stats { font-size:10px; color:var(--muted); margin-top:1px; }
+.status-badge { font-size:9px; padding:2px 7px; border-radius:10px; font-weight:600; }
+.s-ok { background:var(--accent2-light); color:#15803d; }
+.s-warn { background:var(--warning-light); color:var(--warning); }
+.s-bad { background:var(--danger-light); color:var(--danger); }
+/* CENTER */
+.center-panel { display:flex; flex-direction:column; overflow:hidden; position:relative; }
+.map-toolbar { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:8px 12px; background:var(--surface); border-bottom:1px solid var(--border); box-shadow:var(--shadow); }
+.map-btn { padding:5px 11px; border-radius:5px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); font-size:10px; cursor:pointer; font-family:'Space Mono',monospace; transition:all .2s; display:flex; align-items:center; gap:5px; }
+.map-btn.active { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+.map-btn:hover:not(.active) { border-color:#aaa; color:var(--text); }
+.map-btn.cuopt-btn { border-color:var(--nvidia); color:#4a7c00; background:var(--nvidia-light); }
+.map-btn.cuopt-btn.active { background:#d4f0a0; border-color:#5a9900; }
+.dot-ind { width:6px; height:6px; border-radius:50%; }
+#map { flex:1; min-height:0; }
+.map-legend { position:absolute; bottom:14px; left:14px; background:rgba(255,255,255,.96); border:1px solid var(--border); border-radius:8px; padding:12px 14px; z-index:500; box-shadow:var(--shadow-md); min-width:150px; }
+.legend-title { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:1px; margin-bottom:8px; text-transform:uppercase; }
+.legend-item { display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:11px; color:var(--text2); }
+.leg-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.leg-line { width:22px; height:3px; border-radius:2px; flex-shrink:0; }
+.leg-dash { width:22px; height:0; border-top:3px dashed #76b900; flex-shrink:0; }
+.cuopt-panel { position:absolute; top:14px; right:14px; width:230px; background:#fff; border:2px solid var(--nvidia); border-radius:10px; padding:14px; z-index:500; box-shadow:var(--shadow-md); display:none; }
+.cuopt-panel.visible { display:block; }
+.cuopt-head { font-family:'Space Mono',monospace; font-size:9px; color:#4a7c00; letter-spacing:1.5px; margin-bottom:12px; }
+.cuopt-metric { margin-bottom:10px; }
+.cuopt-metric-lbl { font-size:9px; color:var(--muted); margin-bottom:3px; text-transform:uppercase; letter-spacing:.5px; }
+.cuopt-bar-bg { height:7px; background:var(--bg); border-radius:4px; overflow:hidden; border:1px solid var(--border); }
+.cuopt-bar-fill { height:100%; border-radius:4px; }
+.cuopt-metric-val { font-size:13px; font-weight:700; margin-top:3px; }
+.cuopt-savings { background:var(--nvidia-light); border:1px solid #b6e05a; border-radius:6px; padding:10px; text-align:center; margin-top:10px; }
+.cuopt-savings-val { font-size:24px; font-weight:700; color:#4a7c00; font-family:'Space Mono',monospace; }
+.cuopt-savings-lbl { font-size:9px; color:var(--muted); margin-top:2px; }
+.computing-overlay { position:absolute; inset:0; background:rgba(255,255,255,.94); z-index:400; display:none; align-items:center; justify-content:center; flex-direction:column; gap:14px; backdrop-filter:blur(3px); }
+.computing-overlay.show { display:flex; }
+.compute-title { font-family:'Space Mono',monospace; font-size:18px; color:#4a7c00; letter-spacing:2px; }
+.compute-sub { font-size:12px; color:var(--muted); }
+.prog-outer { width:300px; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.prog-inner { height:100%; background:linear-gradient(90deg,var(--nvidia),var(--accent)); border-radius:3px; width:0; transition:width .3s; }
+/* RIGHT */
+.right-panel { background:var(--surface); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.chat-header { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; background:var(--surface2); }
+.ai-avatar { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,#76b900,#0066cc); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; box-shadow:0 2px 6px rgba(118,185,0,.3); }
+.chat-title { font-weight:700; font-size:13px; color:var(--text); }
+.chat-subtitle { font-size:10px; color:var(--muted); }
+.chat-online { margin-left:auto; display:flex; align-items:center; gap:5px; font-size:10px; color:var(--accent2); font-weight:600; }
+.chat-messages { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:12px; }
+.chat-messages::-webkit-scrollbar { width:4px; }
+.chat-messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.msg { display:flex; gap:8px; align-items:flex-start; }
+.msg.user { flex-direction:row-reverse; }
+.msg-avatar { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; }
+.msg-avatar.ai { background:linear-gradient(135deg,#76b900,#0066cc); }
+.msg-avatar.user { background:var(--surface2); border:1px solid var(--border); }
+.msg-bubble { max-width:235px; padding:9px 12px; border-radius:10px; font-size:12px; line-height:1.55; }
+.msg.ai .msg-bubble { background:var(--surface2); border:1px solid var(--border); color:var(--text); border-top-left-radius:3px; }
+.msg.user .msg-bubble { background:var(--accent); color:#fff; border-top-right-radius:3px; }
+.msg-time { font-size:9px; color:var(--muted); margin-top:3px; font-family:'Space Mono',monospace; }
+.msg.user .msg-time { text-align:right; }
+.action-chip { display:inline-block; background:var(--nvidia-light); border:1px solid #b6e05a; border-radius:12px; padding:3px 10px; font-size:10px; color:#4a7c00; margin:3px 3px 0 0; cursor:pointer; transition:all .2s; }
+.action-chip:hover { background:#d4f0a0; }
+.quick-actions { padding:8px 14px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:5px; background:var(--surface2); }
+.quick-btn { font-size:10px; padding:4px 10px; background:var(--surface); border:1px solid var(--border); border-radius:12px; color:var(--muted); cursor:pointer; transition:all .2s; }
+.quick-btn:hover { border-color:var(--accent); color:var(--accent); }
+.chat-input-area { padding:12px 14px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; }
+.chat-input { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:7px; padding:8px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:12px; outline:none; height:38px; transition:border-color .2s; }
+.chat-input:focus { border-color:var(--accent); }
+.chat-input::placeholder { color:var(--muted); }
+.send-btn { width:38px; height:38px; border-radius:7px; background:var(--accent); border:none; color:#fff; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.send-btn:hover { background:#0052a3; }
+.typing { display:flex; gap:4px; align-items:center; }
+.typing span { width:6px; height:6px; background:var(--muted); border-radius:50%; animation:bounce 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay:.2s; }
+.typing span:nth-child(3) { animation-delay:.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+/* STATS BAR */
+.stats-bar { display:flex; align-items:center; height:36px; background:var(--surface); border-top:1px solid var(--border); flex-shrink:0; padding:0 16px; box-shadow:0 -1px 3px rgba(0,0,0,.04); overflow:hidden; }
+.stat-item { display:flex; align-items:center; gap:8px; padding:0 16px; border-right:1px solid var(--border); white-space:nowrap; }
+.stat-item:first-child { padding-left:0; }
+.stat-lbl { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+.stat-val { font-family:'Space Mono',monospace; font-size:12px; font-weight:700; }
+/* TOAST */
+.toast { position:fixed; top:62px; right:330px; background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--warning); border-radius:8px; padding:10px 14px; z-index:1000; box-shadow:var(--shadow-md); font-size:12px; max-width:260px; transform:translateY(-8px); opacity:0; transition:all .3s; pointer-events:none; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-title { font-weight:700; margin-bottom:3px; color:var(--warning); font-size:11px; }
+.toast-msg { color:var(--text2); line-height:1.4; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-sbst">SBS Transit</div>
+    <div class="logo-divider"></div>
+    <div class="nvidia-badge">⚡ NVIDIA cuOPT™</div>
+  </div>
+  <div class="header-center">
+    <div class="live-dot"></div>
+    <span>NETWORK COMMAND CENTRE — LIVE</span>
+  </div>
+  <div class="header-right">
+    <div class="kpi-mini">
+      <div class="kpi-item"><div class="kpi-val" style="color:var(--accent)" id="busCount">412</div><div class="kpi-lbl">Buses Live</div></div>
+      <div class="kpi-item"><div class="kpi-val" style="color:var(--danger)">7</div><div class="kpi-lbl">Incidents</div></div>
+      <div class="kpi-item"><div class="kpi-val" style="color:#4a7c00" id="optSaving">18.4%</div><div class="kpi-lbl">cuOPT Saved</div></div>
+    </div>
+    <div class="time-display" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="section-tabs">
+      <button class="tab-btn active" onclick="switchTab('incidents')">INCIDENTS</button>
+      <button class="tab-btn" onclick="switchTab('routes')">BUS LINES</button>
+      <button class="tab-btn" onclick="switchTab('cuopt')">cuOPT</button>
+    </div>
+
+    <div id="tab-incidents" class="scroll-area">
+      <div class="panel-header">Active Disruptions <span class="badge badge-warn">7</span></div>
+      <div class="incident-card sel" onclick="focusMap(1.3081,103.8518,14,this)">
+        <div class="inc-header"><span class="inc-type t-accident">ACCIDENT</span><span class="inc-time">08:23</span></div>
+        <div class="inc-desc">3-vehicle collision on ECP near Bedok Interchange</div>
+        <div class="inc-affected">Affecting: <strong>Bus 65, 66, 401</strong> · Delay 12–18 min</div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.2897,103.8501,15,this)">
+        <div class="inc-header"><span class="inc-type t-roadworks">ROADWORKS</span><span class="inc-time">06:00</span></div>
+        <div class="inc-desc">Lane closure on Geylang Road opp Aljunied MRT</div>
+        <div class="inc-affected">Affecting: <strong>Bus 65, 67, 760</strong> · Delay 8–10 min</div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.3521,103.8198,13,this)">
+        <div class="inc-header"><span class="inc-type t-traffic">CONGESTION</span><span class="inc-time">07:45</span></div>
+        <div class="inc-desc">Heavy congestion on CTE towards city, 6km queue</div>
+        <div class="inc-affected">Affecting: <strong>Bus 54, 80, 131, 132</strong> · Delay 20+ min</div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.4044,103.7996,13,this)">
+        <div class="inc-header"><span class="inc-type t-weather">HEAVY RAIN</span><span class="inc-time">08:10</span></div>
+        <div class="inc-desc">Intense thunderstorm over Woodlands &amp; Sembawang</div>
+        <div class="inc-affected">Affecting: <strong>Bus 856, 858, 900, 960</strong></div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.2855,103.8565,14,this)">
+        <div class="inc-header"><span class="inc-type t-roadworks">ROADWORKS</span><span class="inc-time">07:00</span></div>
+        <div class="inc-desc">MRT Circle Line works causing lane diversions at Marina Bay</div>
+        <div class="inc-affected">Affecting: <strong>Bus 10, 30, 97, 97e</strong></div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.3294,103.7473,14,this)">
+        <div class="inc-header"><span class="inc-type t-traffic">CONGESTION</span><span class="inc-time">08:05</span></div>
+        <div class="inc-desc">Bukit Batok Rd &amp; PIE junction gridlock, signal fault</div>
+        <div class="inc-affected">Affecting: <strong>Bus 173, 174, 175</strong></div>
+      </div>
+      <div class="incident-card" onclick="focusMap(1.3644,103.9543,13,this)">
+        <div class="inc-header"><span class="inc-type t-weather">STORM</span><span class="inc-time">08:30</span></div>
+        <div class="inc-desc">Flash flooding reported near Tampines Ave 10</div>
+        <div class="inc-affected">Affecting: <strong>Bus 65, 291, 292, 293</strong></div>
+      </div>
+    </div>
+
+    <div id="tab-routes" class="scroll-area" style="display:none">
+      <div class="panel-header">Bus Lines <span class="badge">8</span></div>
+      <div id="bus-lines-list"></div>
+    </div>
+
+    <div id="tab-cuopt" class="scroll-area" style="display:none">
+      <div class="panel-header">NVIDIA cuOPT Engine</div>
+      <div style="padding:14px">
+        <div style="background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:8px;padding:12px;margin-bottom:14px">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4a7c00;letter-spacing:1px;margin-bottom:6px">⚡ GPU ACCELERATION</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.65">NVIDIA cuOPT solves Vehicle Routing Problems using GPU-parallel computation — optimal re-routing in <strong>seconds</strong> vs hours on CPU solvers.</div>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Solver Status</div>
+          <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent2)"></div>GPU Cluster: 8× NVIDIA A100</div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent2)"></div>Fleet Ingestion: Active (412 buses)</div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent2)"></div>LTA DataMall: Connected</div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent2)"></div>OneMap SLA: Synced</div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Optimisation Scope</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.9">✅ Dynamic re-routing<br>✅ Headway balancing<br>✅ Driver schedule optimisation<br>✅ Deadhead minimisation<br>✅ Passenger demand forecasting</div>
+        </div>
+        <button onclick="runCuOpt()" style="width:100%;padding:11px;background:var(--nvidia);border:none;border-radius:7px;color:#fff;font-weight:700;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;box-shadow:0 2px 8px rgba(118,185,0,.35)">▶ RUN NETWORK OPTIMISATION</button>
+        <div id="cuopt-results" style="display:none;margin-top:14px">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Last Run — 0.47 sec on GPU</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:#4a7c00;font-family:'Space Mono',monospace">18.4%</div><div style="font-size:9px;color:var(--muted)">COST REDUCTION</div></div>
+            <div style="background:var(--accent2-light);border:1px solid #86efac;border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:#15803d;font-family:'Space Mono',monospace">23%</div><div style="font-size:9px;color:var(--muted)">FEWER DELAYS</div></div>
+            <div style="background:var(--accent-light);border:1px solid #93c5fd;border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace">S$8.2k</div><div style="font-size:9px;color:var(--muted)">DAILY SAVINGS</div></div>
+            <div style="background:var(--warning-light);border:1px solid #fcd34d;border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--warning);font-family:'Space Mono',monospace">6</div><div style="font-size:9px;color:var(--muted)">ROUTES RE-OPT.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER MAP -->
+  <div class="center-panel">
+    <div class="map-toolbar">
+      <button class="map-btn active" id="btn-accidents" onclick="toggleLayer('accidents',this)"><span class="dot-ind" style="background:var(--danger)"></span>Accidents</button>
+      <button class="map-btn active" id="btn-roadworks" onclick="toggleLayer('roadworks',this)"><span class="dot-ind" style="background:var(--warning)"></span>Roadworks</button>
+      <button class="map-btn active" id="btn-traffic" onclick="toggleLayer('traffic',this)"><span class="dot-ind" style="background:#ef4444"></span>Traffic</button>
+      <button class="map-btn active" id="btn-weather" onclick="toggleLayer('weather',this)"><span class="dot-ind" style="background:#0ea5e9"></span>Weather</button>
+      <button class="map-btn active" id="btn-buslines" onclick="toggleLayer('buslines',this)"><span class="dot-ind" style="background:var(--accent)"></span>Bus Lines</button>
+      <button class="map-btn active" id="btn-buses" onclick="toggleLayer('buses',this)"><span class="dot-ind" style="background:var(--accent2)"></span>Live Buses</button>
+      <button class="map-btn cuopt-btn" id="btn-cuopt" onclick="toggleCuOptLayer(this)">⚡ cuOPT Routes</button>
+    </div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="legend-title">Map Legend</div>
+      <div class="legend-item"><div class="leg-dot" style="background:var(--danger)"></div>Accident</div>
+      <div class="legend-item"><div class="leg-dot" style="background:var(--warning)"></div>Roadworks</div>
+      <div class="legend-item"><div class="leg-dot" style="background:#ef4444;opacity:.6"></div>Traffic Jam</div>
+      <div class="legend-item"><div class="leg-dot" style="background:#0ea5e9"></div>Heavy Rain</div>
+      <div class="legend-item"><div class="leg-line" style="background:var(--accent)"></div>Bus Route</div>
+      <div class="legend-item"><div class="leg-dash"></div>cuOPT Re-route</div>
+      <div class="legend-item"><span style="font-size:13px">🚌</span>Live Bus GPS</div>
+    </div>
+    <div class="cuopt-panel" id="cuoptPanel">
+      <div class="cuopt-head">⚡ cuOPT OPTIMISATION ACTIVE</div>
+      <div class="cuopt-metric">
+        <div class="cuopt-metric-lbl">Fleet Utilisation</div>
+        <div class="cuopt-bar-bg"><div class="cuopt-bar-fill" style="width:87%;background:var(--nvidia)"></div></div>
+        <div class="cuopt-metric-val" style="color:#4a7c00">87% <span style="font-size:10px;color:var(--accent2)">↑11%</span></div>
+      </div>
+      <div class="cuopt-metric">
+        <div class="cuopt-metric-lbl">On-Time Performance</div>
+        <div class="cuopt-bar-bg"><div class="cuopt-bar-fill" style="width:79%;background:var(--accent)"></div></div>
+        <div class="cuopt-metric-val" style="color:var(--accent)">79% <span style="font-size:10px;color:var(--accent2)">↑23%</span></div>
+      </div>
+      <div class="cuopt-metric">
+        <div class="cuopt-metric-lbl">Deadhead Reduction</div>
+        <div class="cuopt-bar-bg"><div class="cuopt-bar-fill" style="width:65%;background:var(--warning)"></div></div>
+        <div class="cuopt-metric-val" style="color:var(--warning)">−32%</div>
+      </div>
+      <div class="cuopt-savings">
+        <div class="cuopt-savings-val">S$8,240</div>
+        <div class="cuopt-savings-lbl">PROJECTED DAILY SAVINGS</div>
+      </div>
+    </div>
+    <div class="computing-overlay" id="computingOverlay">
+      <div style="font-size:48px">⚡</div>
+      <div class="compute-title">cuOPT COMPUTING</div>
+      <div class="compute-sub">GPU-accelerated VRP solver · 8× NVIDIA A100</div>
+      <div class="prog-outer"><div class="prog-inner" id="progressBar"></div></div>
+      <div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace" id="computeStatus">Initialising solver...</div>
+    </div>
+  </div>
+
+  <!-- RIGHT CHAT -->
+  <div class="right-panel">
+    <div class="chat-header">
+      <div class="ai-avatar">🤖</div>
+      <div>
+        <div class="chat-title">SBST AI Operator</div>
+        <div class="chat-subtitle">cuOPT + LTA DataMall + OneMap</div>
+      </div>
+      <div class="chat-online"><div class="live-dot"></div>Online</div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg ai">
+        <div class="msg-avatar ai">🤖</div>
+        <div>
+          <div class="msg-bubble">
+            Good morning! Monitoring <strong>412 active buses</strong> across SBST network.<br><br>
+            Detected <strong>7 disruptions</strong> — ECP accident, Woodlands storm &amp; CTE congestion are highest impact.<br><br>
+            cuOPT has pre-computed optimised re-routing. What would you like to do?
+            <div style="margin-top:8px">
+              <span class="action-chip" onclick="sendQuick('Show re-routing for ECP accident')">Re-route ECP</span>
+              <span class="action-chip" onclick="sendQuick('Run full network optimisation')">Full Optimise</span>
+            </div>
+          </div>
+          <div class="msg-time">08:31:02</div>
+        </div>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="sendQuick('What are the worst affected routes right now?')">Worst routes?</button>
+      <button class="quick-btn" onclick="sendQuick('Show cuOPT savings forecast for today')">Savings forecast</button>
+      <button class="quick-btn" onclick="sendQuick('Deploy 3 extra buses to Woodlands')">Extra buses</button>
+      <button class="quick-btn" onclick="sendQuick('Show re-routing for ECP accident')">ECP reroute</button>
+    </div>
+    <div class="chat-input-area">
+      <input class="chat-input" id="chatInput" placeholder="Ask about routes, incidents, optimisations..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-lbl">Buses Ops</span><span class="stat-val" style="color:var(--accent)">412/450</span></div>
+  <div class="stat-item"><span class="stat-lbl">On-Time</span><span class="stat-val" style="color:var(--accent2)">79.3%</span></div>
+  <div class="stat-item"><span class="stat-lbl">Avg Headway</span><span class="stat-val" style="color:var(--warning)">11.2 min</span></div>
+  <div class="stat-item"><span class="stat-lbl">Incidents</span><span class="stat-val" style="color:var(--danger)">7 active</span></div>
+  <div class="stat-item"><span class="stat-lbl">cuOPT Runs</span><span class="stat-val" style="color:#4a7c00">14 today</span></div>
+  <div class="stat-item"><span class="stat-lbl">Est. Savings</span><span class="stat-val" style="color:var(--accent2)">S$8,240</span></div>
+  <div class="stat-item"><span class="stat-lbl">Pax Today</span><span class="stat-val" style="color:var(--accent)">1.24M</span></div>
+  <div class="stat-item"><span class="stat-lbl">CO₂ Saved</span><span class="stat-val" style="color:var(--accent2)">2.1 T</span></div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle">Alert</div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+
+<script>
+/* ---- CLOCK (no dependencies) ---- */
+function updateClock(){
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-SG',{hour12:false});
+}
+setInterval(updateClock,1000); updateClock();
+
+/* ---- TAB SWITCHING ---- */
+window.switchTab=function(tab){
+  ['incidents','routes','cuopt'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display=(t===tab)?'block':'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b,i){
+    b.classList.toggle('active',['incidents','routes','cuopt'][i]===tab);
+  });
+  if(tab==='routes') renderBusLines();
+};
+
+/* ---- BUS LINES LIST ---- */
+var busLineData=[
+  {num:'65', color:'#0066cc',name:'Tampines ↔ Bedok',buses:24,s:'warn'},
+  {num:'66', color:'#16a34a',name:'Tampines ↔ City', buses:18,s:'warn'},
+  {num:'131',color:'#9333ea',name:'Toa Payoh ↔ North',buses:12,s:'ok'},
+  {num:'173',color:'#d97706',name:'Jurong ↔ Boon Lay',buses:15,s:'bad'},
+  {num:'900',color:'#e11d48',name:'Woodlands ↔ City',buses:20,s:'warn'},
+  {num:'10', color:'#0891b2',name:'Marina ↔ Jurong', buses:16,s:'ok'},
+  {num:'54', color:'#059669',name:'Ang Mo Kio ↔ City',buses:14,s:'bad'},
+  {num:'80', color:'#7c3aed',name:'Bishan ↔ CBD',    buses:22,s:'ok'}
+];
+function renderBusLines(){
+  var lbl={ok:'NORMAL',warn:'DELAYED',bad:'SEVERE'};
+  document.getElementById('bus-lines-list').innerHTML=busLineData.map(function(b){
+    return '<div class="bus-line-item">'
+      +'<div class="bus-num" style="background:'+b.color+'20;color:'+b.color+';border:1px solid '+b.color+'50">'+b.num+'</div>'
+      +'<div class="bus-line-info"><div class="bus-line-name">'+b.name+'</div><div class="bus-line-stats">'+b.buses+' buses · Live GPS</div></div>'
+      +'<div class="status-badge s-'+b.s+'">'+lbl[b.s]+'</div></div>';
+  }).join('');
+}
+
+/* ---- TOAST ---- */
+window.showToast=function(title,msg){
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  var t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},5000);
+};
+
+/* ---- CHAT ---- */
+function getTime(){return new Date().toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});}
+function fmtMsg(s){return s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+function addUserMessage(text){
+  document.getElementById('chatMessages').insertAdjacentHTML('beforeend',
+    '<div class="msg user"><div class="msg-avatar user">👤</div><div>'
+    +'<div class="msg-bubble">'+text.replace(/</g,'&lt;')+'</div>'
+    +'<div class="msg-time">'+getTime()+'</div></div></div>');
+  scrollChat();
+}
+function addAiMessage(text){
+  document.getElementById('chatMessages').insertAdjacentHTML('beforeend',
+    '<div class="msg ai"><div class="msg-avatar ai">🤖</div><div>'
+    +'<div class="msg-bubble">'+fmtMsg(text)+'</div>'
+    +'<div class="msg-time">'+getTime()+'</div></div></div>');
+  scrollChat();
+}
+function addTyping(){
+  var id='t'+Date.now();
+  document.getElementById('chatMessages').insertAdjacentHTML('beforeend',
+    '<div class="msg ai" id="'+id+'"><div class="msg-avatar ai">🤖</div>'
+    +'<div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>');
+  scrollChat(); return id;
+}
+function scrollChat(){var c=document.getElementById('chatMessages');c.scrollTop=c.scrollHeight;}
+var RESP={
+  worst:'The **3 worst affected routes** right now:\n\n🔴 **Bus 54** — CTE congestion, 20+ min delay\n🟡 **Bus 173** — Jurong signal fault, 15 min delay\n🟡 **Bus 65** — ECP accident, 12–18 min delay\n\ncuOPT has pre-computed alternate routes for all three. Deploy?',
+  ecp:'**Bus 65 cuOPT Re-route:**\n\nOriginal: ECP → Bedok Interchange\nOptimised: Geylang Rd → PIE → Tampines Ave 5\n\n⏱ Delay reduction: 11 min\n📍 Extra distance: +2.3 km\n💰 Net saving: **+S$142 per trip**\n\n⚡ Solved in 0.47s on GPU.\n\nShall I activate this re-route?',
+  saving:'**cuOPT Daily Savings Forecast:**\n\n💰 Route optimisation: S$4,200\n⛽ Fuel efficiency: S$2,100\n👤 Driver overtime saved: S$1,940\n\n**Total: S$8,240 today**\nAnnualised: ~S$3.0M/year',
+  woods:'Deploying **3 extra buses** to Woodlands:\n\n🚌 SG1234B — Sembawang depot (ETA 14 min)\n🚌 SG5678D — Redirected from Bus 858 (ETA 8 min)\n🚌 SG9012F — Reserve fleet (ETA 22 min)\n\ncuOPT updated headways. Wait time: **↓ 18 → 9 min**',
+  optim:'Running **full network optimisation** via cuOPT...\n\nAnalysing 412 buses across 127 routes with 7 active incidents, weather data & demand patterns. Initialising GPU solver now...',
+  def:'Based on live network data:\n\n• **7 incidents** affecting 14 services\n• CTE congestion is highest impact (20+ min)\n• cuOPT re-routes ready — click **⚡ cuOPT Routes** button on map\n\nWhat action would you like to take?'
+};
+function getResp(msg){
+  var m=msg.toLowerCase();
+  if(m.includes('worst')||m.includes('affect')) return RESP.worst;
+  if(m.includes('ecp')||m.includes('reroute')||m.includes('re-route')) return RESP.ecp;
+  if(m.includes('saving')||m.includes('forecast')||m.includes('cost')) return RESP.saving;
+  if(m.includes('woodlands')||m.includes('extra')||m.includes('deploy')) return RESP.woods;
+  if(m.includes('optim')) return RESP.optim;
+  return RESP.def;
+}
+window.sendMessage=function(){
+  var inp=document.getElementById('chatInput');
+  var text=inp.value.trim(); if(!text) return;
+  inp.value=''; addUserMessage(text);
+  var tid=addTyping();
+  setTimeout(function(){
+    document.getElementById(tid)&&document.getElementById(tid).remove();
+    addAiMessage(getResp(text));
+    if(text.toLowerCase().includes('optim')) setTimeout(runCuOpt,700);
+    if(text.toLowerCase().includes('ecp')&&window._map){
+      if(!window._cuoptActive){ window._lgCuopt.addTo(window._map); window._cuoptActive=true; document.getElementById('btn-cuopt').classList.add('active'); document.getElementById('cuoptPanel').classList.add('visible'); }
+      window._map.flyTo([1.3081,103.8518],14,{duration:1.5});
+    }
+  },1000+Math.random()*500);
+};
+window.sendQuick=function(text){document.getElementById('chatInput').value=text;sendMessage();};
+
+/* ---- cuOPT SIMULATION ---- */
+window.runCuOpt=function(){
+  var ov=document.getElementById('computingOverlay');
+  var st=document.getElementById('computeStatus');
+  var bar=document.getElementById('progressBar');
+  bar.style.width='0'; ov.classList.add('show');
+  var steps=['Initialising VRP solver...','Loading fleet constraints...','Ingesting LTA DataMall real-time data...','Building travel-time cost matrices...','GPU parallel solving on A100 cluster...','Applying headway & capacity constraints...','Generating optimal route assignments...','✅ Solution found — 6 routes optimised.'];
+  var i=0,pct=0;
+  var iv=setInterval(function(){
+    if(i<steps.length){
+      st.textContent=steps[i++];
+      pct=Math.min(100,pct+100/steps.length);
+      bar.style.width=pct+'%';
+    } else {
+      clearInterval(iv);
+      setTimeout(function(){
+        ov.classList.remove('show');
+        document.getElementById('cuopt-results').style.display='block';
+        if(window._map&&!window._cuoptActive){
+          window._lgCuopt.addTo(window._map);
+          window._cuoptActive=true;
+          document.getElementById('btn-cuopt').classList.add('active');
+          document.getElementById('cuoptPanel').classList.add('visible');
+        }
+        showToast('cuOPT Complete ✅','6 routes re-planned. S$8,240 projected savings today.');
+        addAiMessage('✅ **cuOPT optimisation complete!**\n\nRe-routed 6 services:\n• **Bus 65** — ECP bypass via Geylang\n• **Bus 900** — Storm bypass, Woodlands\n• **Bus 131** — Alt CTE route\n\n**S$8,240 projected savings today**\nOn-time performance +23%.\n\nGreen dashed lines on map show new routes. Shall I deploy?');
+        switchTab('cuopt');
+      },400);
+    }
+  },320);
+};
+
+/* ---- LOAD LEAFLET DYNAMICALLY ---- */
+(function(){
+  /* inject Leaflet CSS */
+  var lnk=document.createElement('link');
+  lnk.rel='stylesheet';
+  lnk.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+  document.head.appendChild(lnk);
+
+  /* inject Leaflet JS, then init map */
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  s.onload=initMap;
+  s.onerror=function(){
+    /* fallback CDN */
+    var l2=document.createElement('link');
+    l2.rel='stylesheet';
+    l2.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    document.head.appendChild(l2);
+    var s2=document.createElement('script');
+    s2.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    s2.onload=initMap;
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+
+function initMap(){
+  /* MAP */
+  var map=L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([1.3521,103.8198],12);
+  window._map=map;
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | LTA DataMall | OneMap SLA',
+    maxZoom:19, subdomains:['a','b','c']
+  }).addTo(map);
+
+  /* LAYER GROUPS */
+  var lgA=L.layerGroup().addTo(map); // accidents
+  var lgR=L.layerGroup().addTo(map); // roadworks
+  var lgT=L.layerGroup().addTo(map); // traffic
+  var lgW=L.layerGroup().addTo(map); // weather
+  var lgB=L.layerGroup().addTo(map); // buslines
+  var lgU=L.layerGroup().addTo(map); // buses (live)
+  var lgC=L.layerGroup();            // cuopt (hidden)
+  window._lgCuopt=lgC; window._cuoptActive=false;
+
+  var lgMap={accidents:lgA,roadworks:lgR,traffic:lgT,weather:lgW,buslines:lgB,buses:lgU};
+  var lgState={accidents:true,roadworks:true,traffic:true,weather:true,buslines:true,buses:true};
+
+  window.toggleLayer=function(name,btn){
+    lgState[name]=!lgState[name];
+    lgState[name]?lgMap[name].addTo(map):lgMap[name].remove();
+    btn.classList.toggle('active',lgState[name]);
+  };
+  window.toggleCuOptLayer=function(btn){
+    window._cuoptActive=!window._cuoptActive;
+    window._cuoptActive?lgC.addTo(map):lgC.remove();
+    btn.classList.toggle('active',window._cuoptActive);
+    document.getElementById('cuoptPanel').classList.toggle('visible',window._cuoptActive);
+  };
+  window.focusMap=function(lat,lng,zoom,el){
+    map.flyTo([lat,lng],zoom||14,{duration:1.2});
+    document.querySelectorAll('.incident-card').forEach(function(c){c.classList.remove('sel');});
+    if(el) el.classList.add('sel');
+  };
+
+  /* ICON */
+  function eIcon(emoji,size){
+    size=size||28;
+    return L.divIcon({html:'<div style="font-size:'+size+'px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))">'+emoji+'</div>',iconSize:[size,size],iconAnchor:[size/2,size/2],className:''});
+  }
+  function pop(t,b){return '<div style="font-family:sans-serif;min-width:160px"><b style="font-size:13px">'+t+'</b><div style="font-size:11px;color:#555;margin-top:4px;line-height:1.5">'+b+'</div></div>';}
+
+  /* ACCIDENTS */
+  [{lat:1.3081,lng:103.8518,lbl:'ECP Accident',body:'3-vehicle collision<br>Bus 65, 66, 401 · Delay 12–18 min'}]
+  .forEach(function(a){
+    L.circle([a.lat,a.lng],{radius:350,color:'#dc2626',fillColor:'#dc2626',fillOpacity:.15,weight:2}).bindPopup(pop('🚨 '+a.lbl,a.body)).addTo(lgA);
+    L.marker([a.lat,a.lng],{icon:eIcon('🚨')}).bindPopup(pop('🚨 '+a.lbl,a.body)).addTo(lgA);
+  });
+
+  /* ROADWORKS */
+  [{lat:1.2897,lng:103.8501,lbl:'Geylang Roadworks',body:'Lane closure opp Aljunied MRT<br>Bus 65, 67, 760'},
+   {lat:1.2855,lng:103.8565,lbl:'Marina Bay Works',body:'MRT Circle Line construction<br>Bus 10, 30, 97'}]
+  .forEach(function(r){
+    L.circle([r.lat,r.lng],{radius:220,color:'#d97706',fillColor:'#d97706',fillOpacity:.15,weight:2}).bindPopup(pop('🚧 '+r.lbl,r.body)).addTo(lgR);
+    L.marker([r.lat,r.lng],{icon:eIcon('🚧')}).bindPopup(pop('🚧 '+r.lbl,r.body)).addTo(lgR);
+  });
+
+  /* TRAFFIC */
+  [{lat:1.3521,lng:103.8198,lbl:'CTE Congestion',body:'6km queue towards city<br>Bus 54, 80, 131, 132 · 20+ min delay',r:700},
+   {lat:1.3294,lng:103.7473,lbl:'PIE/Bukit Batok Gridlock',body:'Signal fault<br>Bus 173, 174, 175',r:400}]
+  .forEach(function(t){
+    L.circle([t.lat,t.lng],{radius:t.r,color:'#ef4444',fillColor:'#ef4444',fillOpacity:.1,weight:2,dashArray:'6,4'}).bindPopup(pop('🔴 '+t.lbl,t.body)).addTo(lgT);
+    L.marker([t.lat,t.lng],{icon:eIcon('🔴',20)}).bindPopup(pop('🔴 '+t.lbl,t.body)).addTo(lgT);
+  });
+
+  /* WEATHER */
+  [{lat:1.4044,lng:103.7996,lbl:'Woodlands Storm',body:'Intense thunderstorm<br>Bus 856, 858, 900, 960',r:1400},
+   {lat:1.3644,lng:103.9543,lbl:'Tampines Flooding',body:'Flash flooding Tampines Ave 10<br>Bus 65, 291, 292, 293',r:600}]
+  .forEach(function(w){
+    L.circle([w.lat,w.lng],{radius:w.r,color:'#0ea5e9',fillColor:'#0ea5e9',fillOpacity:.1,weight:2}).bindPopup(pop('⛈️ '+w.lbl,w.body)).addTo(lgW);
+    L.marker([w.lat,w.lng],{icon:eIcon('⛈️')}).bindPopup(pop('⛈️ '+w.lbl,w.body)).addTo(lgW);
+  });
+
+  /* BUS ROUTES */
+  [{num:'65', color:'#0066cc',pts:[[1.3644,103.9543],[1.3521,103.9201],[1.3381,103.9001],[1.3181,103.8601],[1.3081,103.8518]],name:'Tampines ↔ Bedok'},
+   {num:'66', color:'#16a34a',pts:[[1.3521,103.9401],[1.3301,103.9101],[1.2997,103.8801],[1.2897,103.8501]],name:'Tampines ↔ City'},
+   {num:'131',color:'#9333ea',pts:[[1.3320,103.8480],[1.3421,103.8380],[1.3521,103.8198],[1.3621,103.8098]],name:'Toa Payoh ↔ North'},
+   {num:'173',color:'#d97706',pts:[[1.3294,103.7473],[1.3394,103.7273],[1.3494,103.7073]],name:'Jurong ↔ Boon Lay'},
+   {num:'900',color:'#e11d48',pts:[[1.4044,103.7996],[1.3844,103.7896],[1.3444,103.7896],[1.3244,103.8196]],name:'Woodlands ↔ City'},
+   {num:'10', color:'#0891b2',pts:[[1.2855,103.8565],[1.3048,103.8318],[1.3148,103.8118],[1.3294,103.7473]],name:'Marina ↔ Jurong'}]
+  .forEach(function(r){
+    L.polyline(r.pts,{color:r.color,weight:4,opacity:.85,smoothFactor:1.5}).bindPopup(pop('Bus '+r.num,r.name)).addTo(lgB);
+    L.circleMarker(r.pts[0],{radius:5,color:r.color,fillColor:'#fff',fillOpacity:1,weight:2}).addTo(lgB);
+    L.circleMarker(r.pts[r.pts.length-1],{radius:5,color:r.color,fillColor:'#fff',fillOpacity:1,weight:2}).addTo(lgB);
+  });
+
+  /* LIVE BUSES */
+  var busPts=[
+    {lat:1.3580,lng:103.9350,num:'65'},{lat:1.3350,lng:103.9050,num:'65'},{lat:1.3180,lng:103.8650,num:'65'},
+    {lat:1.3420,lng:103.9100,num:'66'},{lat:1.3100,lng:103.8800,num:'66'},
+    {lat:1.3400,lng:103.8420,num:'131'},{lat:1.3521,lng:103.8200,num:'131'},
+    {lat:1.3350,lng:103.7550,num:'173'},
+    {lat:1.3900,lng:103.7950,num:'900'},{lat:1.3700,lng:103.7900,num:'900'},
+    {lat:1.3000,lng:103.8400,num:'10'},{lat:1.3150,lng:103.8250,num:'10'}
+  ];
+  var busMarkers=[];
+  busPts.forEach(function(b){
+    var m=L.marker([b.lat,b.lng],{icon:eIcon('🚌',20)})
+      .bindPopup(pop('🚌 Bus '+b.num,'GPS Live · '+b.lat.toFixed(4)+', '+b.lng.toFixed(4)+'<br><span style="color:#16a34a">● On Route</span>'))
+      .addTo(lgU);
+    busMarkers.push(m);
+  });
+
+  /* cuOPT ROUTES */
+  [{pts:[[1.3081,103.8518],[1.3000,103.8350],[1.2950,103.8200],[1.2897,103.8501]],lbl:'Bus 65 — ECP Bypass via Geylang'},
+   {pts:[[1.3521,103.8198],[1.3650,103.8050],[1.3750,103.7950],[1.3844,103.7896]],lbl:'Bus 131 — Alt CTE Route'},
+   {pts:[[1.4044,103.7996],[1.3950,103.8100],[1.3750,103.8200],[1.3550,103.8300]],lbl:'Bus 900 — Storm Bypass'}]
+  .forEach(function(r){
+    L.polyline(r.pts,{color:'#76b900',weight:4.5,opacity:.95,dashArray:'10,8',smoothFactor:1})
+     .bindPopup(pop('⚡ cuOPT Re-route',r.lbl+'<br><b style="color:#4a7c00">GPU-optimised</b>'))
+     .addTo(lgC);
+  });
+
+  /* ANIMATE BUSES */
+  setInterval(function(){
+    busMarkers.forEach(function(m){
+      var ll=m.getLatLng();
+      m.setLatLng([ll.lat+(Math.random()-.5)*.0004,ll.lng+(Math.random()-.5)*.0004]);
+    });
+  },4000);
+
+  /* PERIODIC ALERTS */
+  var alerts=[
+    ['Bus 65 Update','ECP incident clearing. Delay reducing to ~8 min.'],
+    ['Woodlands Storm','NEA: Heavy rain continues for 2 more hours.'],
+    ['Bus 900 Detour','cuOPT storm bypass route now live.']
+  ];
+  var ai=0;
+  setInterval(function(){showToast(alerts[ai][0],alerts[ai][1]);ai=(ai+1)%alerts.length;},20000);
+  setTimeout(function(){showToast('Network Status','7 disruptions detected. cuOPT ready to optimise.');},2000);
+}
+</script>
+</body>
+</html>
