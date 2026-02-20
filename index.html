@@ -7,183 +7,195 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#f4f6fa; --surface:#fff; --surface2:#f0f3f8; --border:#dde3ef;
-  --accent:#0066cc; --accent-light:#e8f0fb;
-  --accent2:#16a34a; --accent2-light:#dcfce7;
-  --warning:#d97706; --warning-light:#fef3c7;
-  --danger:#dc2626; --danger-light:#fee2e2;
-  --text:#0f172a; --text2:#374151; --muted:#6b7280;
-  --nvidia:#76b900; --nvidia-light:#f0fce4; --sbst:#e31837;
-  --shadow:0 1px 3px rgba(0,0,0,.08); --shadow-md:0 4px 16px rgba(0,0,0,.12);
+:root{
+  --bg:#f4f6fa;--surface:#fff;--surface2:#f0f3f8;--border:#dde3ef;
+  --accent:#0066cc;--accent-light:#e8f0fb;
+  --accent2:#16a34a;--accent2-light:#dcfce7;
+  --warning:#d97706;--warning-light:#fef3c7;
+  --danger:#dc2626;--danger-light:#fee2e2;
+  --text:#0f172a;--text2:#374151;--muted:#6b7280;
+  --nvidia:#76b900;--nvidia-light:#f0fce4;--sbst:#e31837;
+  --c65:#dc2626;--c131:#7c3aed;--c900:#0891b2;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
 /* HEADER */
 header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;box-shadow:var(--shadow);z-index:200;position:relative;}
-.header-left{display:flex;align-items:center;gap:14px;}
-.logo-sbst{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--sbst);}
+.hd-left{display:flex;align-items:center;gap:14px;}
+.logo{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--sbst);}
 .logo-div{width:1px;height:24px;background:var(--border);}
-.nvidia-badge{background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:5px;padding:3px 9px;font-family:'Space Mono',monospace;font-size:9px;color:#4a7c00;letter-spacing:1px;font-weight:700;}
-.header-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.nv-badge{background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:5px;padding:3px 9px;font-family:'Space Mono',monospace;font-size:9px;color:#4a7c00;letter-spacing:1px;font-weight:700;}
+.hd-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 0 2px var(--accent2-light);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.header-right{display:flex;align-items:center;gap:20px;}
-.time-display{font-family:'Space Mono',monospace;font-size:17px;color:var(--accent);letter-spacing:2px;font-weight:700;}
-.kpi-mini{display:flex;gap:18px;}
-.kpi-item{text-align:center;}
-.kpi-val{font-size:15px;font-weight:700;}
-.kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+.hd-right{display:flex;align-items:center;gap:20px;}
+.clock{font-family:'Space Mono',monospace;font-size:17px;color:var(--accent);letter-spacing:2px;font-weight:700;}
+.kpis{display:flex;gap:18px;}
+.kpi{text-align:center;}
+.kpi-v{font-size:15px;font-weight:700;}
+.kpi-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
 
-/* LAYOUT */
-.main{display:grid;grid-template-columns:272px 1fr 320px;flex:1;overflow:hidden;}
+/* MAIN GRID */
+.main{display:grid;grid-template-columns:272px 1fr 322px;flex:1;overflow:hidden;}
 
-/* LEFT */
-.left-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.section-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);}
-.tab-btn{flex:1;padding:9px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:10px;cursor:pointer;font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .2s;}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface);}
-.panel-hdr{padding:10px 16px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
-.badge{background:var(--warning);color:#fff;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;}
+/* LEFT PANEL */
+.lp{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);}
+.tb{flex:1;padding:9px 4px;background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:10px;cursor:pointer;font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .2s;}
+.tb.on{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface);}
+.phdr{padding:10px 16px;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
+.bdg{background:var(--warning);color:#fff;border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;}
 .scroll{flex:1;overflow-y:auto;}
 .scroll::-webkit-scrollbar{width:4px;}
 .scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
+/* Incident filter chips */
+.inc-filters{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--surface);}
+.f-chip{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);font-size:10px;cursor:pointer;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.f-chip.on-acc{background:var(--danger-light);border-color:var(--danger);color:var(--danger);}
+.f-chip.on-trf{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.f-chip.on-wth{background:#e0f2fe;border-color:#0ea5e9;color:#0369a1;}
+.f-chip.on-rdw{background:var(--warning-light);border-color:var(--warning);color:var(--warning);}
+.f-chip-dot{width:6px;height:6px;border-radius:50%;}
+
 /* Incident cards */
-.inc-card{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-left:3px solid transparent;}
-.inc-card:hover{background:var(--surface2);}
-.inc-card.sel{background:var(--accent-light);border-left-color:var(--accent);}
-.inc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
-.inc-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:3px;}
+.ic{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-left:4px solid transparent;}
+.ic:hover{background:var(--surface2);}
+.ic.sel{background:var(--accent-light);}
+.ic-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.ic-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border-radius:3px;}
 .t-acc{background:var(--danger-light);color:var(--danger);}
-.t-rdw{background:var(--warning-light);color:var(--warning);}
 .t-trf{background:var(--accent-light);color:var(--accent);}
 .t-wth{background:#e0f2fe;color:#0369a1;}
-.inc-time{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
-.inc-desc{font-size:12px;color:var(--text2);line-height:1.4;}
-.inc-aff{font-size:10px;color:var(--muted);margin-top:3px;}
-.inc-aff strong{color:var(--warning);}
-.reroute-btn{margin-top:7px;padding:5px 10px;background:var(--nvidia);border:none;border-radius:5px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .2s;}
-.reroute-btn:hover{background:#5a9900;}
-.reroute-btn.done{background:var(--accent2);}
+.t-rdw{background:var(--warning-light);color:var(--warning);}
+.ic-time{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
+.ic-desc{font-size:12px;color:var(--text2);line-height:1.4;}
+.ic-aff{font-size:10px;color:var(--muted);margin-top:3px;}
+.ic-aff strong{color:var(--text2);font-weight:600;}
+.ic-delay{font-size:10px;font-weight:700;margin-top:2px;}
+.rr-btn{margin-top:8px;padding:5px 12px;border:none;border-radius:5px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .2s;}
+.rr-btn:hover{filter:brightness(1.1);}
+.rr-btn.done{background:var(--accent2)!important;cursor:default;}
+
+/* Route color swatches */
+.route-swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle;}
 
 /* CENTER */
-.center-panel{display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.map-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);}
-.map-btn{padding:5px 11px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:10px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;display:flex;align-items:center;gap:5px;}
-.map-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
-.map-btn:hover:not(.active){border-color:#aaa;color:var(--text);}
-.dot-ind{width:6px;height:6px;border-radius:50%;}
+.cp{display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);}
+.tb2{padding:5px 11px;border-radius:5px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:10px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;display:flex;align-items:center;gap:5px;font-weight:600;}
+.tb2.active{background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.tb2.acc.active{border-color:var(--danger);color:var(--danger);}
+.tb2.trf.active{border-color:var(--accent);color:var(--accent);}
+.tb2.wth.active{border-color:#0ea5e9;color:#0369a1;}
+.tb2.rdw.active{border-color:var(--warning);color:var(--warning);}
+.tb2.buses.active{border-color:var(--accent2);color:var(--accent2);}
+.dind{width:7px;height:7px;border-radius:50%;}
+.map-hint{margin-left:auto;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
 #map{flex:1;min-height:0;}
-.map-legend{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:8px;padding:12px 14px;z-index:500;box-shadow:var(--shadow-md);}
-.leg-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
-.leg-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px;color:var(--text2);}
-.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.leg-line{width:22px;height:3px;border-radius:2px;flex-shrink:0;}
+
+/* Legend */
+.legend{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:8px;padding:12px 14px;z-index:500;box-shadow:var(--shadow-md);}
+.leg-t{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
+.leg-r{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px;color:var(--text2);}
+.ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.lline{width:22px;height:4px;border-radius:2px;flex-shrink:0;}
+.ldash{width:22px;height:0;border-top:3px dashed currentColor;flex-shrink:0;}
 
 /* Computing overlay */
-.compute-ov{position:absolute;inset:0;background:rgba(255,255,255,.95);z-index:400;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(4px);}
-.compute-ov.show{display:flex;}
-.prog-outer{width:300px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.prog-inner{height:100%;background:linear-gradient(90deg,var(--nvidia),var(--accent));border-radius:3px;width:0%;transition:width .3s;}
-
-/* Savings Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:800;display:none;align-items:center;justify-content:center;}
-.modal-overlay.show{display:flex;}
-.modal{background:var(--surface);border-radius:12px;padding:28px;max-width:520px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;}
-.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:4px;}
-.modal-subtitle{font-size:11px;color:var(--muted);margin-bottom:20px;}
-.savings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
-.savings-card{border-radius:8px;padding:12px 14px;border:1px solid var(--border);}
-.savings-card .sc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
-.savings-card .sc-before{font-size:12px;color:var(--danger);text-decoration:line-through;}
-.savings-card .sc-after{font-size:18px;font-weight:700;}
-.savings-card .sc-save{font-size:11px;margin-top:4px;}
-.formula-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;font-size:12px;line-height:1.7;color:var(--text2);}
-.formula-box strong{color:var(--text);}
-.formula-box .formula-line{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);margin:4px 0;}
-.total-saving{background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:8px;padding:14px;text-align:center;}
-.total-saving .ts-val{font-size:28px;font-weight:700;color:#4a7c00;font-family:'Space Mono',monospace;}
-.total-saving .ts-label{font-size:11px;color:#5a7c00;margin-top:4px;}
-.deploy-btn{width:100%;margin-top:14px;padding:12px;background:var(--nvidia);border:none;border-radius:7px;color:#fff;font-weight:700;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;}
-.deploy-btn:hover{background:#5a9900;}
+.cov{position:absolute;inset:0;background:rgba(255,255,255,.95);z-index:400;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(4px);}
+.cov.show{display:flex;}
+.prog-o{width:300px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.prog-i{height:100%;background:linear-gradient(90deg,var(--nvidia),var(--accent));border-radius:3px;width:0%;transition:width .3s;}
 
 /* RIGHT CHAT */
-.right-panel{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.chat-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface2);}
-.ai-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#76b900,#0066cc);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.chat-title{font-weight:700;font-size:13px;}
-.chat-sub{font-size:10px;color:var(--muted);}
-.chat-online{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:var(--accent2);font-weight:600;}
-.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
-.chat-msgs::-webkit-scrollbar{width:4px;}
-.chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.rp{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.ch-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface2);}
+.ai-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#76b900,#0066cc);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ch-t{font-weight:700;font-size:13px;}
+.ch-s{font-size:10px;color:var(--muted);}
+.ch-on{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:var(--accent2);font-weight:600;}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
+.msgs::-webkit-scrollbar{width:4px;}
+.msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 .msg{display:flex;gap:8px;align-items:flex-start;}
-.msg.user{flex-direction:row-reverse;}
-.msg-av{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
-.msg-av.ai{background:linear-gradient(135deg,#76b900,#0066cc);}
-.msg-av.user{background:var(--surface2);border:1px solid var(--border);}
-.msg-bub{max-width:240px;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.55;}
-.msg.ai .msg-bub{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:3px;}
-.msg.user .msg-bub{background:var(--accent);color:#fff;border-top-right-radius:3px;}
-.msg-time{font-size:9px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
-.msg.user .msg-time{text-align:right;}
+.msg.u{flex-direction:row-reverse;}
+.mav{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px;}
+.mav.ai{background:linear-gradient(135deg,#76b900,#0066cc);}
+.mav.u{background:var(--surface2);border:1px solid var(--border);}
+.bub{max-width:245px;padding:9px 12px;border-radius:10px;font-size:12px;line-height:1.6;}
+.msg.ai .bub{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:3px;}
+.msg.u .bub{background:var(--accent);color:#fff;border-top-right-radius:3px;}
+.mt{font-size:9px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+.msg.u .mt{text-align:right;}
 .chip{display:inline-block;background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:12px;padding:3px 10px;font-size:10px;color:#4a7c00;margin:3px 3px 0 0;cursor:pointer;}
 .chip:hover{background:#d4f0a0;}
-.quick-acts{padding:8px 14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;background:var(--surface2);}
-.qbtn{font-size:10px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--muted);cursor:pointer;transition:all .2s;}
-.qbtn:hover{border-color:var(--accent);color:var(--accent);}
-.chat-input-area{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
-.chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;height:38px;transition:border-color .2s;}
-.chat-input:focus{border-color:var(--accent);}
-.chat-input::placeholder{color:var(--muted);}
-.send-btn{width:38px;height:38px;border-radius:7px;background:var(--accent);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
-.send-btn:hover{background:#0052a3;}
+.qacts{padding:8px 14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;background:var(--surface2);}
+.qb{font-size:10px;padding:4px 10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--muted);cursor:pointer;transition:all .2s;}
+.qb:hover{border-color:var(--accent);color:var(--accent);}
+.cin-area{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.cin{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;height:38px;transition:border-color .2s;}
+.cin:focus{border-color:var(--accent);}
+.cin::placeholder{color:var(--muted);}
+.sbtn{width:38px;height:38px;border-radius:7px;background:var(--accent);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sbtn:hover{background:#0052a3;}
 .typing{display:flex;gap:4px;align-items:center;}
 .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite;}
 .typing span:nth-child(2){animation-delay:.2s;}
 .typing span:nth-child(3){animation-delay:.4s;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 
+/* Savings panel in chat (replaces modal) */
+.savings-panel{background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:8px;padding:10px 12px;margin-top:6px;font-size:11px;}
+.sp-title{font-family:'Space Mono',monospace;font-size:9px;color:#4a7c00;letter-spacing:1px;margin-bottom:8px;font-weight:700;}
+.sp-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(0,0,0,.06);}
+.sp-row:last-child{border-bottom:none;}
+.sp-lbl{color:var(--text2);}
+.sp-val{font-weight:700;color:#4a7c00;font-family:'Space Mono',monospace;font-size:10px;}
+.sp-total{background:#d4f0a0;border-radius:5px;padding:6px 8px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;}
+.sp-total-lbl{font-size:10px;color:#2d5a00;font-weight:600;}
+.sp-total-val{font-family:'Space Mono',monospace;font-size:14px;color:#2d5a00;font-weight:700;}
+.deploy-inline{margin-top:7px;width:100%;padding:7px;background:var(--nvidia);border:none;border-radius:5px;color:#fff;font-weight:700;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:.5px;}
+.deploy-inline:hover{background:#5a9900;}
+
 /* STATS BAR */
-.stats-bar{display:flex;align-items:center;height:36px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding:0 16px;overflow:hidden;}
-.stat-item{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--border);white-space:nowrap;}
-.stat-item:first-child{padding-left:0;}
-.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
-.stat-val{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;}
+.sbar{display:flex;align-items:center;height:36px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding:0 16px;overflow:hidden;}
+.si{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--border);white-space:nowrap;}
+.si:first-child{padding-left:0;}
+.sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+.sv{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;}
 
 /* TOAST */
 .toast{position:fixed;top:62px;right:330px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--warning);border-radius:8px;padding:10px 14px;z-index:1000;box-shadow:var(--shadow-md);font-size:12px;max-width:260px;transform:translateY(-8px);opacity:0;transition:all .3s;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast-title{font-weight:700;margin-bottom:3px;color:var(--warning);font-size:11px;}
+.toast-title{font-weight:700;margin-bottom:3px;font-size:11px;}
 .toast-msg{color:var(--text2);line-height:1.4;}
 
-/* Route status tag on map */
-.route-status-tag{background:#fff;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;}
+/* LTA DataMall info box */
+.lta-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px;font-size:11px;line-height:1.8;}
+.lta-box strong{color:var(--text);}
+.lta-tag{display:inline-block;background:var(--accent-light);border:1px solid #93c5fd;border-radius:3px;padding:1px 5px;font-size:9px;color:var(--accent);font-weight:700;margin-right:2px;font-family:'Space Mono',monospace;}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header>
-  <div class="header-left">
-    <div class="logo-sbst">SBS Transit</div>
+  <div class="hd-left">
+    <div class="logo">SBS Transit</div>
     <div class="logo-div"></div>
-    <div class="nvidia-badge">⚡ NVIDIA cuOPT™</div>
+    <div class="nv-badge">⚡ NVIDIA cuOPT™</div>
   </div>
-  <div class="header-center">
-    <div class="live-dot"></div>
-    <span>NETWORK COMMAND CENTRE — LIVE</span>
-  </div>
-  <div class="header-right">
-    <div class="kpi-mini">
-      <div class="kpi-item"><div class="kpi-val" style="color:var(--accent)">412</div><div class="kpi-lbl">Buses Live</div></div>
-      <div class="kpi-item"><div class="kpi-val" style="color:var(--danger)">3</div><div class="kpi-lbl">Need Reroute</div></div>
-      <div class="kpi-item"><div class="kpi-val" style="color:#4a7c00" id="optSaving">—</div><div class="kpi-lbl">cuOPT Saved</div></div>
+  <div class="hd-center"><div class="live-dot"></div><span>NETWORK COMMAND CENTRE — LIVE</span></div>
+  <div class="hd-right">
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-v" style="color:var(--accent)">412</div><div class="kpi-l">Buses Live</div></div>
+      <div class="kpi"><div class="kpi-v" style="color:var(--danger)">3</div><div class="kpi-l">Need Reroute</div></div>
+      <div class="kpi"><div class="kpi-v" style="color:#4a7c00" id="optSaving">—</div><div class="kpi-l">cuOPT Saved</div></div>
     </div>
-    <div class="time-display" id="clock">--:--:--</div>
+    <div class="clock" id="clock">--:--:--</div>
   </div>
 </header>
 
@@ -191,394 +203,461 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 2
 <div class="main">
 
   <!-- LEFT PANEL -->
-  <div class="left-panel">
-    <div class="section-tabs">
-      <button class="tab-btn active" onclick="switchTab('incidents')">DISRUPTIONS</button>
-      <button class="tab-btn" onclick="switchTab('cuopt')">cuOPT STATUS</button>
+  <div class="lp">
+    <div class="tabs">
+      <button class="tb on" onclick="swTab('dis',this)">DISRUPTIONS</button>
+      <button class="tb" onclick="swTab('status',this)">cuOPT STATUS</button>
+      <button class="tb" onclick="swTab('lta',this)">LTA DATA</button>
     </div>
 
     <!-- DISRUPTIONS TAB -->
-    <div id="tab-incidents" class="scroll">
-      <div class="panel-hdr">Routes Needing Re-optimisation <span class="badge">3</span></div>
+    <div id="tab-dis" class="scroll">
+      <div class="phdr">Filter by Incident Type <span class="bdg">3 routes</span></div>
 
-      <!-- Route A -->
-      <div class="inc-card sel" id="card-65" onclick="selectIncident('65',this)">
-        <div class="inc-head"><span class="inc-type t-acc">ACCIDENT</span><span class="inc-time">08:23</span></div>
-        <div class="inc-desc">ECP near Bedok Interchange — 3-vehicle collision, 2 lanes blocked</div>
-        <div class="inc-aff">Route affected: <strong>Bus 65</strong> · Current delay: <strong style="color:var(--danger)">+18 min</strong></div>
-        <button class="reroute-btn" id="btn-65" onclick="event.stopPropagation();requestReroute('65')">⚡ Request cuOPT Re-route</button>
-      </div>
-
-      <!-- Route B -->
-      <div class="inc-card" id="card-131" onclick="selectIncident('131',this)">
-        <div class="inc-head"><span class="inc-type t-trf">CONGESTION</span><span class="inc-time">07:45</span></div>
-        <div class="inc-desc">CTE northbound — severe congestion, 6km queue from Braddell to PIE</div>
-        <div class="inc-aff">Route affected: <strong>Bus 131</strong> · Current delay: <strong style="color:var(--danger)">+22 min</strong></div>
-        <button class="reroute-btn" id="btn-131" onclick="event.stopPropagation();requestReroute('131')">⚡ Request cuOPT Re-route</button>
-      </div>
-
-      <!-- Route C -->
-      <div class="inc-card" id="card-900" onclick="selectIncident('900',this)">
-        <div class="inc-head"><span class="inc-type t-wth">HEAVY RAIN</span><span class="inc-time">08:10</span></div>
-        <div class="inc-desc">Flash flooding at Woodlands Ave 12 — road partially submerged</div>
-        <div class="inc-aff">Route affected: <strong>Bus 900</strong> · Current delay: <strong style="color:var(--danger)">+25 min</strong></div>
-        <button class="reroute-btn" id="btn-900" onclick="event.stopPropagation();requestReroute('900')">⚡ Request cuOPT Re-route</button>
-      </div>
-
-      <div style="padding:14px;background:var(--surface2);border-bottom:1px solid var(--border);">
-        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Other Active Incidents</div>
-        <div style="font-size:11px;color:var(--text2);line-height:1.9">
-          🚧 Geylang Rd roadworks — Bus 65, 67 (minor)<br>
-          🔴 PIE/Bukit Batok signal fault — Bus 173, 174<br>
-          ⛈️ Tampines Ave 10 flooding — Bus 291, 292<br>
-          🚧 Marina Bay MRT works — Bus 10, 30
+      <!-- Filter chips -->
+      <div class="inc-filters">
+        <div class="f-chip on-acc" id="fc-acc" onclick="filterInc('acc')">
+          <span class="f-chip-dot" style="background:var(--danger)"></span>Accident
         </div>
+        <div class="f-chip on-trf" id="fc-trf" onclick="filterInc('trf')">
+          <span class="f-chip-dot" style="background:var(--accent)"></span>Congestion
+        </div>
+        <div class="f-chip on-wth" id="fc-wth" onclick="filterInc('wth')">
+          <span class="f-chip-dot" style="background:#0ea5e9"></span>Weather
+        </div>
+        <div class="f-chip on-rdw" id="fc-rdw" onclick="filterInc('rdw')">
+          <span class="f-chip-dot" style="background:var(--warning)"></span>Roadworks
+        </div>
+      </div>
+
+      <!-- Bus 65 — Accident (red) -->
+      <div class="ic sel" id="card-65" data-type="acc" onclick="selInc('65',this)" style="border-left-color:var(--c65)">
+        <div class="ic-head">
+          <span class="ic-type t-acc">🚨 ACCIDENT</span>
+          <span class="ic-time">08:23</span>
+        </div>
+        <div class="ic-desc">ECP near Bedok Interchange — 3-vehicle collision, 2 lanes blocked</div>
+        <div class="ic-aff">Route: <span class="route-swatch" style="background:var(--c65)"></span><strong>Bus 65</strong></div>
+        <div class="ic-delay" style="color:var(--c65)">+18 min delay · 8 buses affected</div>
+        <button class="rr-btn" id="btn-65" style="background:var(--c65)" onclick="event.stopPropagation();doReroute('65')">⚡ cuOPT Re-route</button>
+      </div>
+
+      <!-- Bus 131 — Congestion (purple) -->
+      <div class="ic" id="card-131" data-type="trf" onclick="selInc('131',this)" style="border-left-color:var(--c131)">
+        <div class="ic-head">
+          <span class="ic-type t-trf">🔴 CONGESTION</span>
+          <span class="ic-time">07:45</span>
+        </div>
+        <div class="ic-desc">CTE northbound — heavy congestion 6km, Braddell to PIE junction</div>
+        <div class="ic-aff">Route: <span class="route-swatch" style="background:var(--c131)"></span><strong>Bus 131</strong></div>
+        <div class="ic-delay" style="color:var(--c131)">+22 min delay · 7 buses affected</div>
+        <button class="rr-btn" id="btn-131" style="background:var(--c131)" onclick="event.stopPropagation();doReroute('131')">⚡ cuOPT Re-route</button>
+      </div>
+
+      <!-- Bus 900 — Weather (blue) -->
+      <div class="ic" id="card-900" data-type="wth" onclick="selInc('900',this)" style="border-left-color:var(--c900)">
+        <div class="ic-head">
+          <span class="ic-type t-wth">⛈️ WEATHER</span>
+          <span class="ic-time">08:10</span>
+        </div>
+        <div class="ic-desc">Flash flooding at Woodlands Ave 12 — road partially submerged</div>
+        <div class="ic-aff">Route: <span class="route-swatch" style="background:var(--c900)"></span><strong>Bus 900</strong></div>
+        <div class="ic-delay" style="color:var(--c900)">+25 min delay · 10 buses affected</div>
+        <button class="rr-btn" id="btn-900" style="background:var(--c900)" onclick="event.stopPropagation();doReroute('900')">⚡ cuOPT Re-route</button>
+      </div>
+
+      <!-- Other incidents (no reroute needed) -->
+      <div class="phdr" style="margin-top:2px">Other Active Incidents (no reroute required)</div>
+      <div style="padding:12px 16px;font-size:11px;color:var(--text2);line-height:2;border-bottom:1px solid var(--border)">
+        <span class="ic-type t-rdw" style="font-size:9px">🚧 ROADWORKS</span>&nbsp; Geylang Rd — Bus 65, 67 minor delay<br>
+        <span class="ic-type t-trf" style="font-size:9px">🔴 CONGESTION</span>&nbsp; PIE/Bukit Batok — Bus 173, 174<br>
+        <span class="ic-type t-wth" style="font-size:9px">⛈️ WEATHER</span>&nbsp;&nbsp; Tampines Ave 10 — Bus 291, 292<br>
+        <span class="ic-type t-rdw" style="font-size:9px">🚧 ROADWORKS</span>&nbsp; Marina Bay MRT — Bus 10, 30
       </div>
     </div>
 
     <!-- cuOPT STATUS TAB -->
-    <div id="tab-cuopt" class="scroll" style="display:none">
-      <div class="panel-hdr">NVIDIA cuOPT Engine</div>
+    <div id="tab-status" class="scroll" style="display:none">
+      <div class="phdr">NVIDIA cuOPT Engine</div>
       <div style="padding:14px">
         <div style="background:var(--nvidia-light);border:1px solid #b6e05a;border-radius:8px;padding:12px;margin-bottom:14px">
           <div style="font-family:'Space Mono',monospace;font-size:9px;color:#4a7c00;letter-spacing:1px;margin-bottom:6px">⚡ GPU-ACCELERATED VRP SOLVER</div>
-          <div style="font-size:11px;color:var(--text2);line-height:1.65">cuOPT uses NVIDIA GPU parallel computing to solve Vehicle Routing Problems in <strong>under 1 second</strong>, versus hours on CPU-based solvers.</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.65">cuOPT uses NVIDIA GPU parallel computing to solve Vehicle Routing Problems in <strong>under 1 second</strong> versus hours on CPU-based solvers.</div>
         </div>
         <div style="margin-bottom:14px">
           <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Live System Status</div>
           <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span>GPU Cluster (8× A100)</span><span style="color:var(--accent2);font-weight:600">● Online</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span>Fleet telemetry feed</span><span style="color:var(--accent2);font-weight:600">● Live</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span>LTA DataMall API</span><span style="color:var(--accent2);font-weight:600">● Synced</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <span>OneMap SLA routing</span><span style="color:var(--accent2);font-weight:600">● Active</span>
-            </div>
+            <div style="display:flex;justify-content:space-between"><span>GPU Cluster (8× A100)</span><span style="color:var(--accent2);font-weight:600">● Online</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Fleet telemetry feed</span><span style="color:var(--accent2);font-weight:600">● Live</span></div>
+            <div style="display:flex;justify-content:space-between"><span>LTA DataMall API</span><span style="color:var(--accent2);font-weight:600">● Synced</span></div>
+            <div style="display:flex;justify-content:space-between"><span>OneMap SLA routing</span><span style="color:var(--accent2);font-weight:600">● Active</span></div>
           </div>
         </div>
-        <div id="cuopt-run-summary" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
+        <div id="session-results" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px">
           <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px">SESSION RESULTS</div>
-          <div id="run-summary-content" style="font-size:11px;color:var(--text2);line-height:1.8"></div>
+          <div id="session-content" style="font-size:11px;color:var(--text2);line-height:1.9"></div>
         </div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">How cuOPT Saves Cost</div>
-        <div style="font-size:11px;color:var(--text2);line-height:1.8;margin-bottom:14px">
-          ✅ Finds shortest viable alternate road path<br>
-          ✅ Minimises deadhead (empty) kilometres<br>
-          ✅ Balances driver overtime costs<br>
-          ✅ Reduces passenger compensation claims<br>
-          ✅ Optimises fuel burn on new route<br>
-          ✅ Reschedules stop dwell times
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Optimisation Capabilities</div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.9">
+          ✅ Road-network-aware re-routing<br>
+          ✅ Fleet headway balancing<br>
+          ✅ Driver schedule constraints<br>
+          ✅ Passenger demand weighting<br>
+          ✅ Multi-objective cost minimisation<br>
+          ✅ Real-time incident zone exclusion
         </div>
-        <div style="font-size:9px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:10px">
-          Click <strong>⚡ Request cuOPT Re-route</strong> on any disrupted route to compute an optimised alternate path and view full savings breakdown.
+      </div>
+    </div>
+
+    <!-- LTA DATAMALL TAB -->
+    <div id="tab-lta" class="scroll" style="display:none">
+      <div class="phdr">LTA DataMall — Data Used</div>
+      <div style="padding:14px;font-size:12px;color:var(--text2);line-height:1.7">
+        <div style="font-weight:700;margin-bottom:8px;color:var(--text)">This demo simulates the following LTA DataMall datasets:</div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:6px">Real-Time Dynamic Data</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div><span class="lta-tag">BUS_ARRIVAL</span> Bus Arrival API — live ETA per stop, used to compute current delays shown on each route card</div>
+            <div><span class="lta-tag">TRAFFIC_INCIDENTS</span> Traffic Incidents — accident, congestion, roadworks events; drives the 3 disruption cards</div>
+            <div><span class="lta-tag">TRAFFIC_SPEEDBAND</span> Traffic Speed Bands — road segment speeds; cuOPT uses this to build the travel-time cost matrix for re-routing</div>
+            <div><span class="lta-tag">VEH_LOCATION</span> Bus Location (GPS) — real-time lat/lng of each bus; animates the 🚌 markers on the map</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:6px">Static Reference Data</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div><span class="lta-tag">BUS_ROUTES</span> Bus Routes — stop sequences per service; defines which stops Bus 65, 131, 900 serve</div>
+            <div><span class="lta-tag">BUS_STOPS</span> Bus Stop locations — lat/lng of all stops; used as waypoints in route geometry</div>
+            <div><span class="lta-tag">PASSENGER_VOL</span> Passenger Volume by Bus Stop — origin-destination demand; cuOPT weights routes to protect high-demand stops</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:6px">Used via OneMap SLA</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div><span class="lta-tag">ROAD_NETWORK</span> Road Network Graph — turn restrictions, lane counts, road hierarchy; OSRM uses this to draw road-following routes</div>
+            <div><span class="lta-tag">GEOFENCE</span> Flood/Incident zone polygons — excluded from cuOPT's permissible route set during active incidents</div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:10px;color:var(--muted);line-height:1.7">
+          ⚠️ <strong>Note:</strong> This is a demonstration. In production, the app would call the <a href="https://datamall.lta.gov.sg" target="_blank" style="color:var(--accent)">LTA DataMall API</a> directly using an API key. All data shown (delays, bus positions, incidents) is <strong>simulated</strong> to represent realistic SBST network conditions.
         </div>
       </div>
     </div>
   </div>
 
   <!-- CENTER MAP -->
-  <div class="center-panel">
-    <div class="map-toolbar">
-      <button class="map-btn active" id="btn-layer-incidents" onclick="toggleLayer('incidents',this)"><span class="dot-ind" style="background:var(--danger)"></span>Incidents</button>
-      <button class="map-btn active" id="btn-layer-buses" onclick="toggleLayer('buses',this)"><span class="dot-ind" style="background:var(--accent2)"></span>Live Buses</button>
-      <button class="map-btn active" id="btn-layer-routes" onclick="toggleLayer('routes',this)"><span class="dot-ind" style="background:var(--accent)"></span>Affected Routes</button>
-      <div style="margin-left:auto;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace" id="map-status">Click a disruption → Request Re-route</div>
+  <div class="cp">
+    <div class="toolbar">
+      <!-- Incident type filter buttons -->
+      <button class="tb2 acc active" id="ml-acc" onclick="mapToggle('acc',this)"><span class="dind" style="background:var(--danger)"></span>Accidents</button>
+      <button class="tb2 trf active" id="ml-trf" onclick="mapToggle('trf',this)"><span class="dind" style="background:var(--accent)"></span>Congestion</button>
+      <button class="tb2 wth active" id="ml-wth" onclick="mapToggle('wth',this)"><span class="dind" style="background:#0ea5e9"></span>Weather</button>
+      <button class="tb2 rdw active" id="ml-rdw" onclick="mapToggle('rdw',this)"><span class="dind" style="background:var(--warning)"></span>Roadworks</button>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+      <button class="tb2 buses active" id="ml-buses" onclick="mapToggle('buses',this)"><span class="dind" style="background:var(--accent2)"></span>Live Buses</button>
+      <div class="map-hint" id="maphint">Select a disruption → click ⚡ cuOPT Re-route</div>
     </div>
 
     <div id="map"></div>
 
-    <div class="map-legend">
-      <div class="leg-title">Map Legend</div>
-      <div class="leg-item"><div class="leg-dot" style="background:var(--danger)"></div>Accident / Incident</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#0ea5e9"></div>Weather / Flooding</div>
-      <div class="leg-item"><div class="leg-line" style="background:var(--danger)"></div>Affected Bus Route</div>
-      <div class="leg-item">
-        <div style="width:22px;height:0;border-top:3px dashed #76b900;flex-shrink:0"></div>
-        cuOPT Re-route
-      </div>
-      <div class="leg-item"><span style="font-size:13px">🚌</span>Live Bus (GPS)</div>
+    <div class="legend">
+      <div class="leg-t">Legend</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c65)"></div><span style="color:var(--c65)">●</span>&nbsp;Bus 65 route (accident)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c131)"></div><span style="color:var(--c131)">●</span>&nbsp;Bus 131 route (congestion)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c900)"></div><span style="color:var(--c900)">●</span>&nbsp;Bus 900 route (weather)</div>
+      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #444;flex-shrink:0;opacity:.4"></div>Original (faded)</div>
+      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #76b900;flex-shrink:0"></div>cuOPT re-route</div>
+      <div class="leg-r"><span style="font-size:13px">🚌</span>Live Bus (GPS)</div>
+      <div class="leg-r"><div class="ldot" style="background:var(--danger)"></div>Accident zone</div>
+      <div class="leg-r"><div class="ldot" style="background:#0ea5e9"></div>Weather zone</div>
     </div>
 
-    <div class="compute-ov" id="computeOv">
+    <!-- Computing overlay -->
+    <div class="cov" id="cov">
       <div style="font-size:42px">⚡</div>
       <div style="font-family:'Space Mono',monospace;font-size:16px;color:#4a7c00;letter-spacing:2px">cuOPT COMPUTING</div>
-      <div style="font-size:12px;color:var(--muted)" id="computeSt">Initialising...</div>
-      <div class="prog-outer"><div class="prog-inner" id="progBar"></div></div>
+      <div style="font-size:12px;color:var(--muted)" id="covSt">Initialising...</div>
+      <div class="prog-o"><div class="prog-i" id="progBar"></div></div>
     </div>
   </div>
 
-  <!-- RIGHT CHAT -->
-  <div class="right-panel">
-    <div class="chat-hdr">
-      <div class="ai-avatar">🤖</div>
+  <!-- RIGHT PANEL — CHAT -->
+  <div class="rp">
+    <div class="ch-hdr">
+      <div class="ai-av">🤖</div>
       <div>
-        <div class="chat-title">SBST AI Operator</div>
-        <div class="chat-sub">cuOPT + LTA DataMall + OneMap</div>
+        <div class="ch-t">SBST AI Operator</div>
+        <div class="ch-s">cuOPT + LTA DataMall + OneMap SLA</div>
       </div>
-      <div class="chat-online"><div class="live-dot"></div>Online</div>
+      <div class="ch-on"><div class="live-dot"></div>Online</div>
     </div>
-    <div class="chat-msgs" id="chatMsgs">
+
+    <div class="msgs" id="chatMsgs">
       <div class="msg ai">
-        <div class="msg-av ai">🤖</div>
+        <div class="mav ai">🤖</div>
         <div>
-          <div class="msg-bub">
-            Good morning! I'm monitoring <strong>412 buses</strong> across the SBST network.<br><br>
-            I've identified <strong>3 routes</strong> that need re-optimisation due to active disruptions — Bus 65 (accident), Bus 131 (congestion) and Bus 900 (flooding).<br><br>
-            Their current routes are shown on the map in <strong style="color:var(--danger)">red</strong>. Request a re-route on any of them to see cuOPT's optimised alternate path.
+          <div class="bub">
+            Good morning! Monitoring <strong>412 active buses</strong> across the SBST network.<br><br>
+            I've identified <strong>3 routes</strong> requiring re-optimisation due to active disruptions:<br><br>
+            <span style="color:var(--c65)">■</span> <strong>Bus 65</strong> — ECP accident (+18 min)<br>
+            <span style="color:var(--c131)">■</span> <strong>Bus 131</strong> — CTE congestion (+22 min)<br>
+            <span style="color:var(--c900)">■</span> <strong>Bus 900</strong> — Woodlands flood (+25 min)<br><br>
+            Each route is shown on the map in its own colour. Click <strong>⚡ cuOPT Re-route</strong> on any card to compute an optimised alternate path.
             <div style="margin-top:8px">
               <span class="chip" onclick="sendQ('Reroute Bus 65 around the ECP accident')">Reroute Bus 65</span>
               <span class="chip" onclick="sendQ('Reroute Bus 131 around CTE congestion')">Reroute Bus 131</span>
               <span class="chip" onclick="sendQ('Reroute Bus 900 around Woodlands flood')">Reroute Bus 900</span>
             </div>
           </div>
-          <div class="msg-time">08:31:02</div>
+          <div class="mt">08:31:02</div>
         </div>
       </div>
     </div>
-    <div class="quick-acts">
-      <button class="qbtn" onclick="sendQ('How is the savings calculated for re-routing?')">How savings work?</button>
-      <button class="qbtn" onclick="sendQ('Which route has the worst delay right now?')">Worst delay?</button>
-      <button class="qbtn" onclick="sendQ('What is the total saving if I reroute all 3?')">Total savings?</button>
-      <button class="qbtn" onclick="sendQ('Reroute Bus 900 around Woodlands flood')">Reroute 900</button>
+
+    <div class="qacts">
+      <button class="qb" onclick="sendQ('How is the saving calculated?')">How savings work?</button>
+      <button class="qb" onclick="sendQ('Which route has the worst delay?')">Worst delay?</button>
+      <button class="qb" onclick="sendQ('What is the total saving if I reroute all 3?')">Total savings?</button>
+      <button class="qb" onclick="sendQ('What LTA data is used in this demo?')">LTA data?</button>
     </div>
-    <div class="chat-input-area">
-      <input class="chat-input" id="chatInput" placeholder="Ask about routes, savings, re-routing..." onkeydown="if(event.key==='Enter')sendMessage()">
-      <button class="send-btn" onclick="sendMessage()">➤</button>
+
+    <div class="cin-area">
+      <input class="cin" id="chatInput" placeholder="Ask about routes, savings, re-routing..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="sbtn" onclick="sendMessage()">➤</button>
     </div>
   </div>
 </div>
 
 <!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-lbl">Buses Active</span><span class="stat-val" style="color:var(--accent)">412 / 450</span></div>
-  <div class="stat-item"><span class="stat-lbl">Routes Disrupted</span><span class="stat-val" style="color:var(--danger)">3</span></div>
-  <div class="stat-item"><span class="stat-lbl">Reroutes Done</span><span class="stat-val" style="color:#4a7c00" id="rerouteCount">0 / 3</span></div>
-  <div class="stat-item"><span class="stat-lbl">Total Savings</span><span class="stat-val" style="color:var(--accent2)" id="totalSavings">S$0</span></div>
-  <div class="stat-item"><span class="stat-lbl">Avg Delay Saved</span><span class="stat-val" style="color:var(--warning)" id="avgDelay">— min</span></div>
-  <div class="stat-item"><span class="stat-lbl">cuOPT Solve Time</span><span class="stat-val" style="color:#4a7c00" id="solveTime">—</span></div>
-  <div class="stat-item"><span class="stat-lbl">Pax Benefitting</span><span class="stat-val" style="color:var(--accent)" id="paxBenefit">—</span></div>
-</div>
-
-<!-- SAVINGS MODAL -->
-<div class="modal-overlay" id="savingsModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title" id="modal-title">cuOPT Savings Breakdown</div>
-    <div class="modal-subtitle" id="modal-subtitle">Powered by NVIDIA GPU-accelerated Vehicle Routing</div>
-
-    <div class="savings-grid" id="savings-grid"></div>
-
-    <div class="formula-box" id="formula-box"></div>
-
-    <div class="total-saving">
-      <div class="ts-val" id="ts-val">S$0</div>
-      <div class="ts-label" id="ts-label">Projected saving per trip on this route</div>
-    </div>
-    <button class="deploy-btn" id="deploy-btn" onclick="deployRoute()">✅ DEPLOY THIS RE-ROUTE NOW</button>
-  </div>
+<div class="sbar">
+  <div class="si"><span class="sl">Buses Active</span><span class="sv" style="color:var(--accent)">412/450</span></div>
+  <div class="si"><span class="sl">Routes Disrupted</span><span class="sv" style="color:var(--danger)">3</span></div>
+  <div class="si"><span class="sl">Reroutes Done</span><span class="sv" style="color:#4a7c00" id="rrCount">0 / 3</span></div>
+  <div class="si"><span class="sl">Daily Savings</span><span class="sv" style="color:var(--accent2)" id="totSav">S$0</span></div>
+  <div class="si"><span class="sl">Avg Delay Saved</span><span class="sv" style="color:var(--warning)" id="avgDel">—</span></div>
+  <div class="si"><span class="sl">Solve Time</span><span class="sv" style="color:#4a7c00" id="solveT">—</span></div>
+  <div class="si"><span class="sl">Pax Benefitting</span><span class="sv" style="color:var(--accent)" id="paxB">—</span></div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div class="toast-msg" id="toastMsg"></div></div>
+<div class="toast" id="toast"><div class="toast-title" id="toastTtl"></div><div class="toast-msg" id="toastMsg"></div></div>
 
 <script>
-/* =====================================================
+/* ==============================
    CLOCK
-===================================================== */
-function updateClock(){
-  document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-SG',{hour12:false});
-}
-setInterval(updateClock,1000); updateClock();
+============================== */
+function updClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-SG',{hour12:false});}
+setInterval(updClock,1000);updClock();
 
-/* =====================================================
-   TAB
-===================================================== */
-window.switchTab=function(tab){
-  document.getElementById('tab-incidents').style.display=tab==='incidents'?'block':'none';
-  document.getElementById('tab-cuopt').style.display=tab==='cuopt'?'block':'none';
-  document.querySelectorAll('.tab-btn').forEach(function(b,i){b.classList.toggle('active',['incidents','cuopt'][i]===tab);});
-};
-
-/* =====================================================
+/* ==============================
    TOAST
-===================================================== */
-function showToast(title,msg,color){
+============================== */
+function toast(title,msg,color){
   var t=document.getElementById('toast');
-  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastTtl').textContent=title;
   document.getElementById('toastMsg').textContent=msg;
   t.style.borderLeftColor=color||'var(--warning)';
+  t.style.color=color||'var(--warning)';
+  document.getElementById('toastTtl').style.color=color||'var(--warning)';
   t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer=setTimeout(function(){t.classList.remove('show');},5000);
+  clearTimeout(t._t);
+  t._t=setTimeout(function(){t.classList.remove('show');},5000);
 }
 
-/* =====================================================
+/* ==============================
+   TAB SWITCHING
+============================== */
+window.swTab=function(tab,btn){
+  ['dis','status','lta'].forEach(function(t){document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+  document.querySelectorAll('.tb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+};
+
+/* ==============================
+   INCIDENT FILTER (left panel cards)
+============================== */
+var filterState={acc:true,trf:true,wth:true,rdw:true};
+window.filterInc=function(type){
+  filterState[type]=!filterState[type];
+  var chip=document.getElementById('fc-'+type);
+  // Toggle chip visual
+  chip.className='f-chip'+(filterState[type]?' on-'+type:'');
+  // Show/hide cards
+  document.querySelectorAll('.ic[data-type="'+type+'"]').forEach(function(c){
+    c.style.display=filterState[type]?'':'none';
+  });
+  // Also toggle map layer
+  syncMapLayerFromFilter(type,filterState[type]);
+};
+
+/* ==============================
+   ROUTE DATA
+============================== */
+var ROUTES={
+  '65':{
+    color:'#dc2626', label:'Bus 65 — Tampines to Bedok (via ECP)',
+    wp:[[1.3521,103.9401],[1.3350,103.9150],[1.3181,103.9000],[1.3100,103.8850],[1.3081,103.8680],[1.3081,103.8518]],
+    altWp:[[1.3521,103.9401],[1.3480,103.9200],[1.3420,103.9000],[1.3340,103.8880],[1.3260,103.8760],[1.3200,103.8660],[1.3081,103.8518]],
+    inc:{lat:1.3081,lng:103.8680,type:'acc',emoji:'🚨',desc:'3-vehicle collision — 2 lanes blocked'},
+    delay:18, pax:1240, buses:8, solveRoutes:6820,
+    altLabel:'Bedok North Rd (avoids ECP)',
+    kmOrig:14.2, kmAlt:11.8,
+    fuelSave:18.40, ltaPenalty:162, passPenalty:0, overtime:0
+  },
+  '131':{
+    color:'#7c3aed', label:'Bus 131 — Toa Payoh to Yishun (via CTE)',
+    wp:[[1.3320,103.8480],[1.3480,103.8380],[1.3620,103.8260],[1.3780,103.8200],[1.4100,103.8280],[1.4296,103.8353]],
+    altWp:[[1.3320,103.8480],[1.3420,103.8310],[1.3540,103.8140],[1.3700,103.8060],[1.3900,103.8150],[1.4296,103.8353]],
+    inc:{lat:1.3620,lng:103.8260,type:'trf',emoji:'🔴',desc:'CTE congestion 6km — signal fault'},
+    delay:22, pax:980, buses:7, solveRoutes:5940,
+    altLabel:'Upper Thomson Rd (avoids CTE)',
+    kmOrig:16.8, kmAlt:18.1,
+    fuelSave:23.60, ltaPenalty:198, passPenalty:0, overtime:45
+  },
+  '900':{
+    color:'#0891b2', label:'Bus 900 — Woodlands to City Hall',
+    wp:[[1.4382,103.7890],[1.4200,103.7960],[1.4044,103.7996],[1.3800,103.7850],[1.3500,103.8000],[1.2897,103.8516]],
+    altWp:[[1.4382,103.7890],[1.4500,103.8060],[1.4380,103.8220],[1.4100,103.8300],[1.3800,103.8200],[1.3500,103.8200],[1.2897,103.8516]],
+    inc:{lat:1.4044,lng:103.7996,type:'wth',emoji:'⛈️',desc:'Flash flooding — road partially submerged'},
+    delay:25, pax:1450, buses:10, solveRoutes:8210,
+    altLabel:'Admiralty Rd East (avoids flood zone)',
+    kmOrig:19.4, kmAlt:21.2,
+    fuelSave:16.10, ltaPenalty:225, passPenalty:290, overtime:68
+  }
+};
+
+/* Total per-trip saving calc */
+function calcSaving(k){
+  var r=ROUTES[k];
+  return r.fuelSave+r.ltaPenalty+r.passPenalty+r.overtime;
+}
+
+/* ==============================
    CHAT
-===================================================== */
+============================== */
 function gt(){return new Date().toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});}
 function fmt(s){return s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
-function addUser(t){
-  document.getElementById('chatMsgs').insertAdjacentHTML('beforeend',
-    '<div class="msg user"><div class="msg-av user">👤</div><div><div class="msg-bub">'+t.replace(/</g,'&lt;')+'</div><div class="msg-time">'+gt()+'</div></div></div>');
-  scrl();
+function addAi(html,raw){
+  var el=document.createElement('div');el.className='msg ai';
+  el.innerHTML='<div class="mav ai">🤖</div><div><div class="bub">'+( raw?html:fmt(html) )+'</div><div class="mt">'+gt()+'</div></div>';
+  document.getElementById('chatMsgs').appendChild(el);scrl();return el;
 }
-function addAi(t){
-  document.getElementById('chatMsgs').insertAdjacentHTML('beforeend',
-    '<div class="msg ai"><div class="msg-av ai">🤖</div><div><div class="msg-bub">'+fmt(t)+'</div><div class="msg-time">'+gt()+'</div></div></div>');
-  scrl();
+function addUser(t){
+  document.getElementById('chatMsgs').insertAdjacentHTML('beforeend','<div class="msg u"><div class="mav u">👤</div><div><div class="bub">'+t.replace(/</g,'&lt;')+'</div><div class="mt">'+gt()+'</div></div></div>');scrl();
 }
 function addTyping(){
   var id='ty'+Date.now();
-  document.getElementById('chatMsgs').insertAdjacentHTML('beforeend',
-    '<div class="msg ai" id="'+id+'"><div class="msg-av ai">🤖</div><div class="msg-bub"><div class="typing"><span></span><span></span><span></span></div></div></div>');
-  scrl(); return id;
+  document.getElementById('chatMsgs').insertAdjacentHTML('beforeend','<div class="msg ai" id="'+id+'"><div class="mav ai">🤖</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div></div>');
+  scrl();return id;
 }
 function scrl(){var c=document.getElementById('chatMsgs');c.scrollTop=c.scrollHeight;}
 
-var SAVINGS={
-  '65':{delay:18,pax:1240,kmSaved:3.2,fuelSave:18.40,overtimeSave:0,penaltySave:186,totalPerTrip:246,tripsPerDay:28,route:'Bus 65 (ECP → Bedok)'},
-  '131':{delay:22,pax:980,kmSaved:4.1,fuelSave:23.60,overtimeSave:45,penaltySave:226,totalPerTrip:318,tripsPerDay:24,route:'Bus 131 (CTE → Bishan)'},
-  '900':{delay:25,pax:1450,kmSaved:2.8,fuelSave:16.10,overtimeSave:68,penaltySave:290,totalPerTrip:402,tripsPerDay:32,route:'Bus 900 (Woodlands → City)'}
-};
+/* --- Build savings panel HTML (shown in chat) --- */
+function savingsHTML(k){
+  var r=ROUTES[k];
+  var total=calcSaving(k);
+  var daily=total*( k==='65'?28:k==='131'?24:32 );
+  var html='<div class="savings-panel">'
+    +'<div class="sp-title">⚡ cuOPT SAVINGS — BUS '+k+'</div>'
+    +'<div class="sp-row"><span class="sp-lbl">⏱ Delay reduced</span><span class="sp-val">+'+r.delay+' min → &lt;3 min</span></div>'
+    +'<div class="sp-row"><span class="sp-lbl">💸 LTA delay penalty avoided</span><span class="sp-val">S$'+r.ltaPenalty+'/trip</span></div>'
+    +'<div class="sp-row"><span class="sp-lbl">⛽ Fuel saving (shorter route)</span><span class="sp-val">S$'+r.fuelSave.toFixed(2)+'/trip</span></div>'
+    +(r.overtime>0?'<div class="sp-row"><span class="sp-lbl">👤 Driver overtime avoided</span><span class="sp-val">S$'+r.overtime+'/trip</span></div>':'')
+    +(r.passPenalty>0?'<div class="sp-row"><span class="sp-lbl">🎫 Pax compensation avoided</span><span class="sp-val">S$'+r.passPenalty+'/trip</span></div>':'')
+    +'<div class="sp-row"><span class="sp-lbl">📏 Route: '+r.kmOrig+' km → '+r.kmAlt+' km</span><span class="sp-val">via '+r.altLabel+'</span></div>'
+    +'<div class="sp-total"><span class="sp-total-lbl">Total saving/trip</span><span class="sp-total-val">S$'+total.toLocaleString()+'</span></div>'
+    +'<div class="sp-total" style="margin-top:4px"><span class="sp-total-lbl">Projected daily saving</span><span class="sp-total-val">S$'+daily.toLocaleString()+'</span></div>'
+    +'<div style="font-size:10px;color:#2d5a00;margin-top:6px;line-height:1.6"><strong>How calculated:</strong> LTA delay penalty (S$9/late-min) + fuel saved on shorter/uncongested road + driver overtime avoided + passenger compensation vouchers (if delay &gt;20 min). cuOPT minimises this total cost across '+r.solveRoutes.toLocaleString()+' route permutations on GPU.</div>'
+    +'<button class="deploy-inline" onclick="deployRoute(\''+k+'\')">✅ DEPLOY THIS RE-ROUTE</button>'
+    +'</div>';
+  return html;
+}
 
+/* --- Response logic --- */
 var RESP={
-  savings:'**How cuOPT savings are calculated:**\n\nWhen a route is disrupted, every minute of delay has a real cost:\n\n**1. Delay Penalty Cost**\nSBST pays LTA performance penalties for buses >5 min late. Each min late = ~S$8–12 penalty per trip.\n\n**2. Fuel Cost**\nIdle buses in jams burn fuel unproductively. Shorter re-routes reduce this directly.\n\n**3. Driver Overtime**\nExtended delays push drivers into overtime shifts (+S$18–25/hr surcharge).\n\n**4. Passenger Compensation**\nSevere delays (>20 min) trigger passenger goodwill vouchers (~S$0.20/pax).\n\ncuOPT minimises the **sum of all these costs** across all constraints simultaneously on GPU — finding the optimal route in under 1 second.',
-  worst:'**Bus 900 has the worst delay** at +25 min, affecting ~1,450 passengers due to Woodlands flooding.\n\nBus 131 (+22 min, CTE congestion) is second, and Bus 65 (+18 min, ECP accident) third.\n\nClick **⚡ Request cuOPT Re-route** on any card to compute the optimal alternate path and see the full savings breakdown.',
-  total:'**If all 3 routes are re-routed by cuOPT:**\n\n• Bus 65 saves ~**S$246/trip × 28 trips = S$6,888/day**\n• Bus 131 saves ~**S$318/trip × 24 trips = S$7,632/day**\n• Bus 900 saves ~**S$402/trip × 32 trips = S$12,864/day**\n\n**Total daily saving: S$27,384**\nAnnualised (if recurring incidents): ~S$2.1M/year\n\ncuOPT solved all 3 routes simultaneously in **0.83 seconds** on GPU.',
-  reroute65:'Computing cuOPT re-route for **Bus 65** around the ECP accident...',
-  reroute131:'Computing cuOPT re-route for **Bus 131** around the CTE congestion...',
-  reroute900:'Computing cuOPT re-route for **Bus 900** around the Woodlands flooding...',
-  def:'Based on live network data, I\'m tracking **3 routes needing re-optimisation**.\n\nUse the **⚡ Request cuOPT Re-route** buttons to compute GPU-optimised alternate paths, or ask me about savings calculations, delays, or deployment.'
+  savings:'**How cuOPT savings are calculated:**\n\n**1. LTA Delay Penalty** — SBST pays LTA ~S$9 per late minute per trip for buses over 5 min behind schedule.\n\n**2. Fuel Cost** — Idling in jams burns fuel unproductively. Shorter or uncongested re-routes cut this directly.\n\n**3. Driver Overtime** — Delays push drivers past shift limits, triggering overtime pay (+S$18–25/hr).\n\n**4. Passenger Compensation** — Delays over 20 min trigger goodwill vouchers (~S$0.20/pax).\n\ncuOPT sums all four costs and finds the route minimising the total, evaluated across thousands of permutations simultaneously on GPU — in under 1 second.',
+  worst:'**Bus 900 has the worst delay** at +25 min, affecting ~1,450 passengers due to Woodlands flooding.\n\nRanking:\n🔵 Bus 900 — +25 min (weather)\n🟣 Bus 131 — +22 min (congestion)\n🔴 Bus 65 — +18 min (accident)\n\nClick ⚡ cuOPT Re-route on any card to compute the optimised path.',
+  total:'**If all 3 routes are re-routed:**\n\n🔴 Bus 65 — S$180/trip × 28 trips = **S$5,040/day**\n🟣 Bus 131 — S$267/trip × 24 trips = **S$6,408/day**\n🔵 Bus 900 — S$599/trip × 32 trips = **S$19,168/day**\n\n**Total: ~S$30,616/day**\n\ncuOPT solved all 3 simultaneously in under 1 second on GPU.',
+  lta:'**LTA DataMall datasets used in this demo:**\n\n**Real-time:**\n• BUS_ARRIVAL — live ETAs to compute delays\n• TRAFFIC_INCIDENTS — feeds the 3 disruption cards\n• TRAFFIC_SPEEDBAND — road speeds for cuOPT cost matrix\n• VEH_LOCATION — GPS positions animating the 🚌 buses\n\n**Static:**\n• BUS_ROUTES — stop sequences per service\n• BUS_STOPS — stop lat/lng as route waypoints\n• PASSENGER_VOL — demand weighting in cuOPT\n\n**Via OneMap SLA:**\n• Road network graph (turn restrictions, road hierarchy)\n• Flood/incident zone geofences\n\nSee the **LTA Data** tab for full details.',
+  reroute:'Initiating cuOPT re-route computation...',
+  def:'I\'m monitoring **3 disrupted routes** on the live network.\n\nUse ⚡ cuOPT Re-route buttons on each card to compute GPU-optimised alternate paths and see a savings breakdown in this chat. Or ask me:\n• "How are savings calculated?"\n• "Which route is worst?"\n• "What LTA data is used?"'
 };
 
 function getResp(msg){
   var m=msg.toLowerCase();
   if(m.includes('saving')||m.includes('calculat')||m.includes('how')) return RESP.savings;
-  if(m.includes('worst')||m.includes('delay')) return RESP.worst;
+  if(m.includes('worst')||m.includes('delay')||m.includes('bad')) return RESP.worst;
   if(m.includes('total')||m.includes('all 3')||m.includes('all three')) return RESP.total;
-  if(m.includes('65')) { setTimeout(function(){requestReroute('65');},800); return RESP.reroute65; }
-  if(m.includes('131')) { setTimeout(function(){requestReroute('131');},800); return RESP.reroute131; }
-  if(m.includes('900')) { setTimeout(function(){requestReroute('900');},800); return RESP.reroute900; }
+  if(m.includes('lta')||m.includes('data')) return RESP.lta;
+  if(m.includes('65')){setTimeout(function(){doReroute('65');},800);return 'Computing cuOPT re-route for **Bus 65** around the ECP accident...';}
+  if(m.includes('131')){setTimeout(function(){doReroute('131');},800);return 'Computing cuOPT re-route for **Bus 131** around CTE congestion...';}
+  if(m.includes('900')){setTimeout(function(){doReroute('900');},800);return 'Computing cuOPT re-route for **Bus 900** around Woodlands flooding...';}
   return RESP.def;
 }
 
 window.sendMessage=function(){
   var inp=document.getElementById('chatInput');
-  var text=inp.value.trim(); if(!text) return;
-  inp.value=''; addUser(text);
+  var text=inp.value.trim();if(!text)return;
+  inp.value='';addUser(text);
   var tid=addTyping();
   setTimeout(function(){
-    document.getElementById(tid)&&document.getElementById(tid).remove();
+    var el=document.getElementById(tid);if(el)el.remove();
     addAi(getResp(text));
   },900+Math.random()*400);
 };
 window.sendQ=function(t){document.getElementById('chatInput').value=t;sendMessage();};
 
-/* =====================================================
-   SAVINGS MODAL
-===================================================== */
-var pendingRoute=null;
-function showSavingsModal(routeNum){
-  var s=SAVINGS[routeNum];
-  document.getElementById('modal-title').textContent='cuOPT Savings — '+s.route;
-  document.getElementById('modal-subtitle').textContent='GPU solve time: 0.'+Math.floor(Math.random()*5+4)+'s on NVIDIA A100 · Solve method: Vehicle Routing Problem (VRP)';
-
-  var dailyTotal=s.totalPerTrip*s.tripsPerDay;
-
-  document.getElementById('savings-grid').innerHTML=
-    card('Delay Reduction','Current: +'+s.delay+' min','After: &lt;3 min','<span style="color:var(--accent2)">−'+(s.delay-3)+' min saved</span>','var(--accent-light)','#93c5fd')+
-    card('Fuel Cost','Idling in jam: ~S$'+(s.fuelSave*1.8).toFixed(0)+'/trip','Rerouted burn: S$'+(s.fuelSave*0.5).toFixed(0)+'/trip','<span style="color:var(--accent2)">S$'+s.fuelSave.toFixed(2)+' saved</span>','#f0fdf4','#86efac')+
-    card('LTA Delay Penalty','S$'+(s.delay*9)+' per delayed trip','S$0 (on time)','<span style="color:var(--accent2)">S$'+(s.delay*9)+' saved</span>','var(--warning-light)','#fcd34d')+
-    card('Pax Compensation',s.delay>20?'S$'+(s.pax*0.20).toFixed(0)+' vouchers/trip':'S$0 (under 20 min)','S$0 after reroute','<span style="color:var(--accent2)">S$'+s.penaltySave.toFixed(0)+' saved</span>','var(--danger-light)','#fca5a5');
-
-  document.getElementById('formula-box').innerHTML=
-    '<strong>💡 How cuOPT calculates this saving:</strong><br><br>'
-    +'cuOPT minimises the total cost function across all constraints simultaneously:<br><br>'
-    +'<div class="formula-line">Cost = Σ(delay_penalty × late_mins) + fuel_cost(route_km) + overtime_cost + pax_compensation</div>'
-    +'<br>For this re-route, cuOPT evaluated <strong>'+(Math.floor(Math.random()*8000+4000)).toLocaleString()+' route permutations</strong> in parallel on GPU and selected the path that minimises total cost while satisfying:<br><br>'
-    +'• Driver break constraints (max 2.5 hr continuous)<br>'
-    +'• Bus capacity at each stop (max 87 pax)<br>'
-    +'• Headway spacing (min 8 min between buses)<br>'
-    +'• Road network turn restrictions (OneMap SLA data)<br>'
-    +'• Flood/accident zone exclusions (LTA DataMall live feed)';
-
-  document.getElementById('ts-val').textContent='S$'+s.totalPerTrip.toLocaleString()+'/trip · S$'+dailyTotal.toLocaleString()+'/day';
-  document.getElementById('ts-label').textContent=s.tripsPerDay+' trips/day on this route · '+s.pax.toLocaleString()+' passengers benefitting';
-  pendingRoute=routeNum;
-  document.getElementById('savingsModal').classList.add('show');
-}
-
-function card(title,before,after,saving,bg,border){
-  return '<div class="savings-card" style="background:'+bg+';border-color:'+border+'">'
-    +'<div class="sc-label">'+title+'</div>'
-    +'<div class="sc-before">'+before+'</div>'
-    +'<div class="sc-after">'+after+'</div>'
-    +'<div class="sc-save">'+saving+'</div>'
-    +'</div>';
-}
-
-window.closeModal=function(){document.getElementById('savingsModal').classList.remove('show');};
-
-window.deployRoute=function(){
-  closeModal();
-  if(!pendingRoute) return;
-  var s=SAVINGS[pendingRoute];
-  var btn=document.getElementById('btn-'+pendingRoute);
-  if(btn){btn.textContent='✅ Re-route Deployed';btn.classList.add('done');btn.disabled=true;}
-  rerouteDone[pendingRoute]=true;
-  updateStats();
-  showToast('Route Deployed ✅','Bus '+pendingRoute+' re-route is now active. Saving S$'+s.totalPerTrip+'/trip.','var(--accent2)');
-  addAi('✅ **Bus '+pendingRoute+' re-route deployed!**\n\nDrivers notified via MDT. Estimated saving: **S$'+s.totalPerTrip+'/trip × '+s.tripsPerDay+' trips = S$'+(s.totalPerTrip*s.tripsPerDay).toLocaleString()+'/day**.\n\nThe dashed green line on the map shows the active cuOPT route.');
-};
-
-var rerouted=0;
-var rerouteDone={};
+/* ==============================
+   STATS BAR
+============================== */
+var doneRoutes={};
 var totalSaved=0;
-var delaysSaved=[];
-var paxHelped=0;
-
 function updateStats(){
-  rerouted=Object.keys(rerouteDone).length;
-  totalSaved=0; delaysSaved=[]; paxHelped=0;
-  Object.keys(rerouteDone).forEach(function(k){
-    var s=SAVINGS[k];
-    totalSaved+=s.totalPerTrip*s.tripsPerDay;
-    delaysSaved.push(s.delay-3);
-    paxHelped+=s.pax;
+  var n=Object.keys(doneRoutes).length;
+  var delSaved=[];
+  var pax=0;
+  totalSaved=0;
+  Object.keys(doneRoutes).forEach(function(k){
+    var r=ROUTES[k];var s=calcSaving(k);
+    totalSaved+=s*(k==='65'?28:k==='131'?24:32);
+    delSaved.push(r.delay-3);pax+=r.pax;
   });
-  document.getElementById('rerouteCount').textContent=rerouted+' / 3';
-  document.getElementById('totalSavings').textContent='S$'+totalSaved.toLocaleString();
-  document.getElementById('optSaving').textContent=rerouted>0?'S$'+totalSaved.toLocaleString():'—';
-  document.getElementById('avgDelay').textContent=delaysSaved.length>0?Math.round(delaysSaved.reduce(function(a,b){return a+b;},0)/delaysSaved.length)+' min':'— min';
-  document.getElementById('paxBenefit').textContent=paxHelped>0?paxHelped.toLocaleString()+' pax':'—';
-
-  // Update cuopt panel
-  if(rerouted>0){
-    var summary='';
-    Object.keys(rerouteDone).forEach(function(k){
-      var s=SAVINGS[k];
-      summary+='✅ Bus '+k+': S$'+(s.totalPerTrip*s.tripsPerDay).toLocaleString()+'/day saved<br>';
-    });
-    document.getElementById('cuopt-run-summary').style.display='block';
-    document.getElementById('run-summary-content').innerHTML=summary+'<br><strong>Total: S$'+totalSaved.toLocaleString()+'/day</strong>';
+  document.getElementById('rrCount').textContent=n+' / 3';
+  document.getElementById('totSav').textContent=totalSaved>0?'S$'+totalSaved.toLocaleString():'S$0';
+  document.getElementById('optSaving').textContent=totalSaved>0?'S$'+totalSaved.toLocaleString():'—';
+  document.getElementById('avgDel').textContent=delSaved.length?Math.round(delSaved.reduce(function(a,b){return a+b;},0)/delSaved.length)+' min':'—';
+  document.getElementById('paxB').textContent=pax>0?pax.toLocaleString()+' pax':'—';
+  if(n>0){
+    var sc='';Object.keys(doneRoutes).forEach(function(k){var s=calcSaving(k);var trips=k==='65'?28:k==='131'?24:32;sc+='✅ Bus '+k+': S$'+(s*trips).toLocaleString()+'/day saved<br>';});
+    sc+='<br><strong>Total: S$'+totalSaved.toLocaleString()+'/day</strong>';
+    document.getElementById('session-results').style.display='block';
+    document.getElementById('session-content').innerHTML=sc;
   }
 }
 
-/* =====================================================
-   LEAFLET + MAP
-===================================================== */
+/* ==============================
+   DEPLOY ROUTE
+============================== */
+window.deployRoute=function(k){
+  if(doneRoutes[k])return;
+  doneRoutes[k]=true;
+  var btn=document.getElementById('btn-'+k);
+  if(btn){btn.textContent='✅ Deployed';btn.classList.add('done');btn.disabled=true;}
+  updateStats();
+  toast('Route Deployed ✅','Bus '+k+' re-route active. Saving S$'+calcSaving(k)+'/trip.','var(--accent2)');
+  addAi('✅ **Bus '+k+' re-route is now live.** Drivers notified via MDT. The dashed green line on the map shows the active cuOPT path.\n\nEstimated saving: **S$'+calcSaving(k)+'/trip**');
+};
+
+/* ==============================
+   LEAFLET LOADER
+============================== */
 (function(){
-  var lnk=document.createElement('link');
-  lnk.rel='stylesheet';
-  lnk.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-  document.head.appendChild(lnk);
-  var s=document.createElement('script');
-  s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  var lnk=document.createElement('link');lnk.rel='stylesheet';lnk.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(lnk);
+  var s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
   s.onload=initMap;
   s.onerror=function(){
     var l2=document.createElement('link');l2.rel='stylesheet';l2.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(l2);
@@ -587,261 +666,208 @@ function updateStats(){
   document.head.appendChild(s);
 })();
 
-/* =====================================================
-   OSRM route fetcher — follows real roads
-===================================================== */
-function getRoute(waypoints, cb){
-  // waypoints: [[lat,lng], [lat,lng], ...]
-  var coords=waypoints.map(function(p){return p[1]+','+p[0];}).join(';');
-  var url='https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson';
-  fetch(url)
+/* ==============================
+   OSRM road-following route
+============================== */
+function fetchRoad(wp,cb){
+  var coords=wp.map(function(p){return p[1]+','+p[0];}).join(';');
+  fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson')
     .then(function(r){return r.json();})
-    .then(function(data){
-      if(data.routes&&data.routes[0]){
-        var coords=data.routes[0].geometry.coordinates;
-        // OSRM returns [lng,lat], convert to [lat,lng] for Leaflet
-        var latlngs=coords.map(function(c){return[c[1],c[0]];});
-        cb(latlngs, data.routes[0].distance, data.routes[0].duration);
-      }
-    })
-    .catch(function(){
-      // If OSRM unavailable, use waypoints directly as fallback
-      cb(waypoints, 0, 0);
-    });
+    .then(function(d){
+      if(d.routes&&d.routes[0]){
+        cb(d.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];}),d.routes[0].distance);
+      } else {cb(wp,0);}
+    }).catch(function(){cb(wp,0);});
 }
 
-/* =====================================================
-   ROUTE DEFINITIONS
-   Using key bus stops / waypoints in Singapore
-===================================================== */
-var ROUTES={
-  '65':{
-    color:'#dc2626',
-    label:'Bus 65 — Tampines to Bedok (via ECP)',
-    // Tampines Int → Bedok Int via ECP
-    waypoints:[[1.3521,103.9401],[1.3350,103.9250],[1.3181,103.9060],[1.3081,103.8730],[1.3081,103.8518]],
-    // Alternate: avoid ECP, go inland via Bedok North
-    altWaypoints:[[1.3521,103.9401],[1.3480,103.9200],[1.3420,103.9050],[1.3340,103.8950],[1.3220,103.8820],[1.3081,103.8518]],
-    incident:{lat:1.3081,lng:103.8680,type:'accident',emoji:'🚨',desc:'3-vehicle collision<br>Bus 65 delayed 18 min'},
-    delayMin:18, pax:1240, busCount:8,
-    altLabel:'Via Bedok North Rd (avoids ECP)',
-    kmOriginal:14.2, kmAlt:11.8
-  },
-  '131':{
-    color:'#9333ea',
-    label:'Bus 131 — Toa Payoh to Yishun (via CTE)',
-    // Toa Payoh → Yishun via CTE
-    waypoints:[[1.3320,103.8480],[1.3480,103.8380],[1.3620,103.8260],[1.3780,103.8200],[1.4296,103.8353]],
-    // Alt: Upper Thomson Rd
-    altWaypoints:[[1.3320,103.8480],[1.3420,103.8350],[1.3540,103.8190],[1.3700,103.8100],[1.3900,103.8200],[1.4296,103.8353]],
-    incident:{lat:1.3620,lng:103.8260,type:'traffic',emoji:'🔴',desc:'CTE congestion 6km<br>Bus 131 delayed 22 min'},
-    delayMin:22, pax:980, busCount:7,
-    altLabel:'Via Upper Thomson Rd (avoids CTE)',
-    kmOriginal:16.8, kmAlt:18.1
-  },
-  '900':{
-    color:'#0891b2',
-    label:'Bus 900 — Woodlands to City Hall',
-    // Woodlands → City Hall
-    waypoints:[[1.4382,103.7890],[1.4200,103.7960],[1.4044,103.7996],[1.3800,103.7850],[1.3500,103.8000],[1.2897,103.8516]],
-    // Alt: Avoid Woodlands Ave 12, go via Admiralty
-    altWaypoints:[[1.4382,103.7890],[1.4480,103.8050],[1.4350,103.8200],[1.4100,103.8300],[1.3800,103.8200],[1.3500,103.8200],[1.2897,103.8516]],
-    incident:{lat:1.4044,lng:103.7996,type:'weather',emoji:'⛈️',desc:'Flash flooding<br>Bus 900 delayed 25 min'},
-    delayMin:25, pax:1450, busCount:10,
-    altLabel:'Via Admiralty Rd (avoids flood zone)',
-    kmOriginal:19.4, kmAlt:21.2
-  }
-};
-
-/* =====================================================
+/* ==============================
    MAP INIT
-===================================================== */
-var map, lgIncidents, lgBuses, lgRoutes, lgCuopt;
-var layerStates={incidents:true,buses:true,routes:true};
-var routePolylines={};      // original routes
-var cuoptPolylines={};      // cuopt dashed routes
-var busAnimators={};        // per-route bus animators
-var busMarkers={};          // live bus markers per route
-var selectedRoute=null;
-var routesLoaded={};
+============================== */
+var map,lgAcc,lgTrf,lgWth,lgRdw,lgBuses,lgRoutes,lgCuopt;
+var mapLayerState={acc:true,trf:true,wth:true,rdw:true,buses:true};
+var routeData={};   // {k: {origPath, altPath, origPl, altPl, busMarkers}}
+var rerouteDone={};
 
 function initMap(){
   map=L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([1.3521,103.8198],12);
   window._map=map;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors | LTA DataMall | OneMap SLA',
+    attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> | LTA DataMall | OneMap SLA',
     maxZoom:19,subdomains:['a','b','c']
   }).addTo(map);
 
-  lgIncidents=L.layerGroup().addTo(map);
+  lgAcc=L.layerGroup().addTo(map);
+  lgTrf=L.layerGroup().addTo(map);
+  lgWth=L.layerGroup().addTo(map);
+  lgRdw=L.layerGroup().addTo(map);
   lgBuses=L.layerGroup().addTo(map);
   lgRoutes=L.layerGroup().addTo(map);
   lgCuopt=L.layerGroup().addTo(map);
 
-  // Draw all affected routes
-  Object.keys(ROUTES).forEach(function(k){loadRoute(k);});
+  // Incident markers per type
+  addIncidentMarker(ROUTES['65'].inc,lgAcc);
+  addIncidentMarker(ROUTES['131'].inc,lgTrf);
+  addIncidentMarker(ROUTES['900'].inc,lgWth);
+  // Other roadworks
+  addMarker(1.2897,103.8501,'rdw','🚧','Geylang Rd Roadworks','Lane closure — Bus 65, 67 (minor)',lgRdw);
+  addMarker(1.3294,103.7473,'trf','🔴','PIE/Bukit Batok','Signal fault — Bus 173, 174',lgTrf);
+  addMarker(1.3644,103.9543,'wth','⛈️','Tampines Ave 10 Flooding','Flash flood — Bus 291, 292',lgWth);
+  addMarker(1.2855,103.8565,'rdw','🚧','Marina Bay MRT Works','Lane diversion — Bus 10, 30',lgRdw);
 
-  // Add incident markers
-  Object.keys(ROUTES).forEach(function(k){
-    var r=ROUTES[k];
-    var inc=r.incident;
-    var color=inc.type==='accident'?'#dc2626':inc.type==='traffic'?'#9333ea':'#0ea5e9';
-    L.circle([inc.lat,inc.lng],{radius:300,color:color,fillColor:color,fillOpacity:.15,weight:2})
-     .bindPopup(mkPop(inc.emoji+' Disruption — Bus '+k,inc.desc))
-     .addTo(lgIncidents);
-    L.marker([inc.lat,inc.lng],{icon:eIcon(inc.emoji)})
-     .bindPopup(mkPop(inc.emoji+' Disruption — Bus '+k,inc.desc))
-     .addTo(lgIncidents);
-  });
+  // Load all 3 affected routes via OSRM
+  Object.keys(ROUTES).forEach(function(k){loadRouteOnMap(k);});
 
-  // Periodic alerts
-  setTimeout(function(){showToast('Network Alert','Bus 900 delay now +25 min. cuOPT re-route ready.','var(--warning)');},3000);
-  setTimeout(function(){showToast('ECP Update','Accident partially cleared. Still 1 lane blocked.','var(--accent)');},25000);
-}
-
-function loadRoute(k){
-  var r=ROUTES[k];
-  // Fetch real road route from OSRM
-  getRoute(r.waypoints,function(latlngs,distM,durS){
-    routesLoaded[k]={latlngs:latlngs,distM:distM,durS:durS};
-    // Draw original route (red/coloured)
-    var pl=L.polyline(latlngs,{color:r.color,weight:5,opacity:.85,smoothFactor:1})
-      .bindPopup(mkPop('🚌 '+r.label,'<span style="color:'+r.color+'">⚠ DISRUPTED</span> · '+r.busCount+' buses on route<br>Current delay: <b style="color:#dc2626">+'+r.delayMin+' min</b><br><br>Click ⚡ Request cuOPT Re-route to optimise'))
-      .addTo(lgRoutes);
-    routePolylines[k]=pl;
-
-    // Spawn buses on this route
-    spawnBuses(k, latlngs);
-
-    document.getElementById('map-status').textContent='3 affected routes loaded — request re-route to optimise';
-  });
+  setTimeout(function(){toast('Network Alert','Bus 900 delay now +25 min. cuOPT re-route ready.','var(--warning)');},3000);
+  setTimeout(function(){toast('ECP Update','Accident partially cleared — still 1 lane blocked.','var(--accent)');},28000);
 }
 
 function eIcon(emoji,size){
   size=size||28;
   return L.divIcon({html:'<div style="font-size:'+size+'px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.3))">'+emoji+'</div>',iconSize:[size,size],iconAnchor:[size/2,size/2],className:''});
 }
-function mkPop(title,body){
-  return '<div style="font-family:\'DM Sans\',sans-serif;min-width:170px"><b style="font-size:13px">'+title+'</b><div style="font-size:11px;color:#555;margin-top:5px;line-height:1.6">'+body+'</div></div>';
+function pop(title,body){
+  return '<div style="font-family:sans-serif;min-width:160px"><b style="font-size:13px">'+title+'</b><div style="font-size:11px;color:#555;margin-top:4px;line-height:1.6">'+body+'</div></div>';
+}
+var typeColors={acc:'#dc2626',trf:'#0066cc',wth:'#0ea5e9',rdw:'#d97706'};
+function addIncidentMarker(inc,lg){
+  var col=typeColors[inc.type]||'#888';
+  L.circle([inc.lat,inc.lng],{radius:300,color:col,fillColor:col,fillOpacity:.15,weight:2}).bindPopup(pop(inc.emoji+' Incident',inc.desc)).addTo(lg);
+  L.marker([inc.lat,inc.lng],{icon:eIcon(inc.emoji)}).bindPopup(pop(inc.emoji+' Incident',inc.desc)).addTo(lg);
+}
+function addMarker(lat,lng,type,emoji,title,desc,lg){
+  var col=typeColors[type]||'#888';
+  L.circle([lat,lng],{radius:200,color:col,fillColor:col,fillOpacity:.12,weight:1.5,dashArray:'4,3'}).bindPopup(pop(emoji+' '+title,desc)).addTo(lg);
+  L.marker([lat,lng],{icon:eIcon(emoji,22)}).bindPopup(pop(emoji+' '+title,desc)).addTo(lg);
 }
 
-/* =====================================================
-   BUS ANIMATION along road path
-===================================================== */
-function spawnBuses(routeKey, latlngs){
-  if(!latlngs||latlngs.length<2) return;
-  var r=ROUTES[routeKey];
-  busMarkers[routeKey]=[];
-  busAnimators[routeKey]=[];
-
-  // Place N buses evenly spread along the route
-  var numBuses=r.busCount;
-  for(var i=0;i<numBuses;i++){
-    var startFrac=(i/numBuses)%(1);
-    var startIdx=Math.floor(startFrac*latlngs.length);
-    var m=L.marker(latlngs[startIdx],{icon:eIcon('🚌',18),zIndexOffset:100})
-      .bindPopup(mkPop('🚌 Bus '+routeKey,'Route: '+r.label+'<br>Status: <span style="color:#dc2626">⚠ Delayed +'+r.delayMin+' min</span>'))
-      .addTo(lgBuses);
-    busMarkers[routeKey].push(m);
-    animateBus(routeKey, m, latlngs, startIdx);
-  }
-}
-
-function animateBus(routeKey, marker, path, startIdx){
-  var idx=startIdx||0;
-  var speed=0.004; // fraction of path per second (slower = more realistic)
-  var frac=startIdx/path.length;
-  var lastTime=null;
-
-  function step(ts){
-    if(!lastTime) lastTime=ts;
-    var dt=(ts-lastTime)/1000;
-    lastTime=ts;
-    frac+=speed*dt;
-    if(frac>=1) frac=0;
-    var i=Math.floor(frac*path.length);
-    if(i>=path.length) i=path.length-1;
-    if(marker._map){ // only update if on map
-      marker.setLatLng(path[i]);
-    }
-    var anim=requestAnimationFrame(step);
-    // Store raf id so we can cancel
-    marker._rafId=anim;
-  }
-  var rafId=requestAnimationFrame(step);
-  marker._rafId=rafId;
-}
-
-function swapBusPath(routeKey, newPath){
-  // Smoothly migrate buses to the new cuopt path
-  if(!busMarkers[routeKey]) return;
-  busMarkers[routeKey].forEach(function(m){
-    if(m._rafId) cancelAnimationFrame(m._rafId);
-    // Random start position on new path
-    var startFrac=Math.random();
-    animateBus(routeKey, m, newPath, Math.floor(startFrac*newPath.length));
-    // Update popup
-    m.setPopupContent(mkPop('🚌 Bus '+routeKey,'Route: <b style="color:#76b900">cuOPT Re-route Active</b><br>New route: ON TIME ✅'));
+/* --- Load original route on map --- */
+function loadRouteOnMap(k){
+  var r=ROUTES[k];
+  fetchRoad(r.wp,function(path){
+    routeData[k]={origPath:path,altPath:null,origPl:null,altPl:null,busMarkers:[]};
+    var pl=L.polyline(path,{color:r.color,weight:5,opacity:.85,smoothFactor:1})
+      .bindPopup(pop('🚌 '+r.label,'<span style="color:'+r.color+'">⚠ DISRUPTED</span> · '+r.buses+' buses · +'+r.delay+' min delay<br><small>Click ⚡ cuOPT Re-route on the left panel to optimise</small>'))
+      .addTo(lgRoutes);
+    routeData[k].origPl=pl;
+    spawnBuses(k,path);
   });
 }
 
-/* =====================================================
-   LAYER TOGGLE
-===================================================== */
-window.toggleLayer=function(name,btn){
-  layerStates[name]=!layerStates[name];
-  var lg={incidents:lgIncidents,buses:lgBuses,routes:lgRoutes}[name];
-  layerStates[name]?lg.addTo(map):lg.remove();
-  btn.classList.toggle('active',layerStates[name]);
+/* --- Spawn animated buses --- */
+function spawnBuses(k,path){
+  if(!path||path.length<2)return;
+  var r=ROUTES[k];
+  for(var i=0;i<r.buses;i++){
+    var frac=i/r.buses;
+    var idx=Math.floor(frac*path.length);
+    var m=L.marker(path[idx],{icon:eIcon('🚌',18),zIndexOffset:100})
+      .bindPopup(pop('🚌 Bus '+k,'<span style="color:'+r.color+'">⚠ Delayed +'+r.delay+' min</span>'))
+      .addTo(lgBuses);
+    routeData[k].busMarkers.push(m);
+    startBusAnim(m,path,frac);
+  }
+}
+
+/* --- Bus animation along path --- */
+function startBusAnim(marker,path,startFrac){
+  var frac=startFrac||0;
+  var speed=0.0025; // fraction/sec
+  var last=null;
+  function step(ts){
+    if(!last)last=ts;
+    frac+=speed*(ts-last)/1000;
+    if(frac>=1)frac=0;
+    last=ts;
+    var idx=Math.min(Math.floor(frac*path.length),path.length-1);
+    marker.setLatLng(path[idx]);
+    marker._raf=requestAnimationFrame(step);
+  }
+  marker._raf=requestAnimationFrame(step);
+  marker._path=path;
+  marker._frac=frac;
+}
+
+function switchBusPath(k,newPath){
+  if(!routeData[k])return;
+  routeData[k].busMarkers.forEach(function(m){
+    if(m._raf)cancelAnimationFrame(m._raf);
+    m._path=newPath;
+    startBusAnim(m,newPath,Math.random());
+    m.setPopupContent(pop('🚌 Bus '+k,'<span style="color:#16a34a">✅ cuOPT Re-route Active — ON TIME</span>'));
+  });
+}
+
+/* ==============================
+   MAP LAYER TOGGLE (toolbar)
+============================== */
+var lgMap={acc:null,trf:null,wth:null,rdw:null,buses:null};
+// Assign after init — we need to wait for lgAcc etc.
+function getLg(name){return {acc:lgAcc,trf:lgTrf,wth:lgWth,rdw:lgRdw,buses:lgBuses}[name];}
+
+window.mapToggle=function(name,btn){
+  mapLayerState[name]=!mapLayerState[name];
+  var lg=getLg(name);
+  if(lg){mapLayerState[name]?lg.addTo(map):lg.remove();}
+  btn.classList.toggle('active',mapLayerState[name]);
+
+  // Also sync route visibility: if type toggled off, hide matching route card
+  if(name!=='buses'){
+    filterState[name]=mapLayerState[name];
+    var chip=document.getElementById('fc-'+name);
+    if(chip)chip.className='f-chip'+(filterState[name]?' on-'+name:'');
+    document.querySelectorAll('.ic[data-type="'+name+'"]').forEach(function(c){c.style.display=filterState[name]?'':'none';});
+  }
 };
 
-/* =====================================================
+function syncMapLayerFromFilter(type,state){
+  mapLayerState[type]=state;
+  var btn=document.getElementById('ml-'+type);
+  if(btn)btn.classList.toggle('active',state);
+  var lg=getLg(type);
+  if(lg){state?lg.addTo(map):lg.remove();}
+}
+
+/* ==============================
    SELECT INCIDENT
-===================================================== */
-window.selectIncident=function(routeKey, el){
-  document.querySelectorAll('.inc-card').forEach(function(c){c.classList.remove('sel');});
+============================== */
+window.selInc=function(k,el){
+  document.querySelectorAll('.ic').forEach(function(c){c.classList.remove('sel');});
   el.classList.add('sel');
-  selectedRoute=routeKey;
-  var r=ROUTES[routeKey];
-  var inc=r.incident;
+  if(!map)return;
+  var r=ROUTES[k];
+  var inc=r.inc;
   map.flyTo([inc.lat,inc.lng],14,{duration:1.2});
 };
 
-/* =====================================================
-   REQUEST REROUTE
-===================================================== */
-window.requestReroute=function(routeKey){
-  if(rerouteDone[routeKey]) return;
+/* ==============================
+   REROUTE FLOW
+============================== */
+window.doReroute=function(k){
+  if(rerouteDone[k])return;
+  var r=ROUTES[k];
 
-  // Select the card
-  var card=document.getElementById('card-'+routeKey);
-  if(card){
-    document.querySelectorAll('.inc-card').forEach(function(c){c.classList.remove('sel');});
-    card.classList.add('sel');
-  }
+  // Select card
+  var card=document.getElementById('card-'+k);
+  if(card){document.querySelectorAll('.ic').forEach(function(c){c.classList.remove('sel');});card.classList.add('sel');}
 
-  // Fly to incident
-  var r=ROUTES[routeKey];
-  var inc=r.incident;
-  map.flyTo([inc.lat,inc.lng],13,{duration:1});
+  // Fly to incident zone
+  map.flyTo([r.inc.lat,r.inc.lng],13,{duration:1});
 
-  // Show computing overlay
-  var ov=document.getElementById('computeOv');
-  var st=document.getElementById('computeSt');
+  // Computing overlay
+  var ov=document.getElementById('cov');
+  var st=document.getElementById('covSt');
   var bar=document.getElementById('progBar');
-  bar.style.width='0%';
-  ov.classList.add('show');
+  bar.style.width='0%';ov.classList.add('show');
 
   var steps=[
-    'Loading LTA DataMall live feed...',
-    'Fetching OneMap road network data...',
+    'Loading LTA DataMall live traffic feed...',
+    'Fetching OneMap SLA road network...',
     'Applying incident exclusion zones...',
     'Building travel-time cost matrix...',
-    'GPU parallel VRP solving on A100...',
-    'Evaluating '+Math.floor(Math.random()*8000+5000).toLocaleString()+' route permutations...',
-    'Applying fleet & headway constraints...',
-    '✅ Optimal re-route found!'
+    'GPU parallel solving — '+r.solveRoutes.toLocaleString()+' permutations...',
+    'Applying headway & capacity constraints...',
+    '✅ Optimal alternate route found!'
   ];
   var i=0;
   var iv=setInterval(function(){
@@ -851,51 +877,53 @@ window.requestReroute=function(routeKey){
       i++;
     } else {
       clearInterval(iv);
-      var solveMs=Math.floor(Math.random()*400+350);
-      document.getElementById('solveTime').textContent=(solveMs/1000).toFixed(2)+'s';
+      var ms=350+Math.floor(Math.random()*450);
+      document.getElementById('solveT').textContent=(ms/1000).toFixed(2)+'s';
 
-      // Fetch alt route from OSRM
-      getRoute(r.altWaypoints,function(altPath,distM,durS){
+      fetchRoad(r.altWp,function(altPath){
         ov.classList.remove('show');
+        rerouteDone[k]=true;
 
-        // Remove old polyline
-        if(routePolylines[routeKey]){
-          lgRoutes.removeLayer(routePolylines[routeKey]);
+        // Fade original route
+        if(routeData[k]&&routeData[k].origPl){
+          routeData[k].origPl.setStyle({color:r.color,weight:3,opacity:.3,dashArray:'5,5'});
+          routeData[k].origPl.bindPopup(pop('Original Route — Bus '+k,'<span style="color:#aaa">⚠ DISRUPTED (pre-cuOPT)</span>'));
         }
 
-        // Draw original route faded
-        if(routesLoaded[routeKey]){
-          L.polyline(routesLoaded[routeKey].latlngs,{color:r.color,weight:3,opacity:.25,dashArray:'4,4'})
-           .bindPopup(mkPop('Original Route — Bus '+routeKey,'⚠ DISRUPTED — now re-routed by cuOPT'))
-           .addTo(lgRoutes);
-        }
-
-        // Draw cuOPT re-route in dashed green
-        var cuoptPl=L.polyline(altPath,{color:'#76b900',weight:5,opacity:.95,dashArray:'12,8',smoothFactor:1})
-          .bindPopup(mkPop('⚡ cuOPT Re-route — Bus '+routeKey,r.altLabel+'<br><b style="color:#4a7c00">GPU-optimised — saves '+SAVINGS[routeKey].totalPerTrip.toLocaleString()+' S$/trip</b>'))
+        // Draw cuOPT re-route: SAME colour, dashed
+        var cuoptPl=L.polyline(altPath,{color:r.color,weight:5,opacity:.95,dashArray:'12,8',smoothFactor:1})
+          .bindPopup(pop('⚡ cuOPT Re-route — Bus '+k,'<span style="color:#4a7c00"><strong>'+r.altLabel+'</strong></span><br>Saving S$'+calcSaving(k)+'/trip · GPU-optimised'))
           .addTo(lgCuopt);
-        cuoptPolylines[routeKey]=cuoptPl;
+        routeData[k].altPl=cuoptPl;
 
-        // Fit map to show both routes
-        var bounds=cuoptPl.getBounds();
-        if(routesLoaded[routeKey]&&routesLoaded[routeKey].latlngs.length>0){
-          bounds.extend(L.polyline(routesLoaded[routeKey].latlngs).getBounds());
-        }
-        map.fitBounds(bounds.pad(0.15),{duration:1.2});
+        // Fit map to show both
+        var bounds=L.latLngBounds(altPath);
+        if(routeData[k].origPath)bounds.extend(L.latLngBounds(routeData[k].origPath));
+        map.fitBounds(bounds.pad(0.12),{animate:true,duration:1.2});
 
         // Migrate buses to new path
-        swapBusPath(routeKey, altPath);
+        switchBusPath(k,altPath);
 
-        // Show savings modal after brief pause
-        setTimeout(function(){showSavingsModal(routeKey);},500);
+        // Show savings in chat
+        document.getElementById('maphint').textContent='Bus '+k+' — solid=original, dashed=cuOPT re-route (same colour)';
+        toast('cuOPT Route Ready','Bus '+k+' re-route computed. Review in chat.','#76b900');
 
-        document.getElementById('map-status').textContent='Bus '+routeKey+' cuOPT re-route shown in green dashes';
-        showToast('cuOPT Route Ready','Bus '+routeKey+' — review savings & deploy.','#76b900');
+        // Add chat message with savings panel
+        var msgEl=addAi(
+          '✅ <strong>Bus '+k+' cuOPT re-route computed!</strong><br><br>'
+          +'On the map: <strong style="color:'+r.color+'">solid line = original disrupted route</strong>, <strong style="color:'+r.color+'">dashed line = cuOPT optimised route</strong> — same colour, easy to compare.<br><br>'
+          +'Here\'s the savings breakdown:',
+          true
+        );
+        // Append savings panel to last bubble
+        var bub=msgEl.querySelector('.bub');
+        bub.insertAdjacentHTML('beforeend',savingsHTML(k));
+        scrl();
+        updateStats();
       });
     }
-  },280);
+  },290);
 };
-
 </script>
 </body>
 </html>
