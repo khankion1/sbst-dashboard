@@ -500,88 +500,117 @@ window.filterInc=function(type){
 
 /* ==============================
    ROUTE DATA
-   splitIdx: index in wp[] where incident zone STARTS (before = 0..splitIdx, incident = splitIdx..splitEndIdx, after = splitEndIdx..end)
-   splitEndIdx: index where incident zone ENDS and normal route resumes
-   bypassWp: extra road points that go AROUND the incident, connecting wp[splitIdx] to wp[splitEndIdx]
+   Each route has 4 explicit segment arrays:
+   - beforeWp   : waypoints BEFORE the incident (solid coloured line)
+   - incidentWp : waypoints THROUGH the incident zone (turns dotted on reroute)
+   - afterWp    : waypoints AFTER the incident (solid coloured line)
+   - bypassWp   : waypoints of the ALTERNATE road around the incident (dotted → green on deploy)
+   The incident segment is a SMALL portion of the full route.
 ============================== */
 var ROUTES={
   '65':{
     color:'#dc2626',
     label:'Bus 65 — Tampines Int → Bedok Int (via ECP)',
-    // Full route waypoints
-    wp:[
-      [1.3521,103.9401], // 0 Tampines Int
-      [1.3350,103.9150], // 1
-      [1.3181,103.9000], // 2
-      [1.3100,103.8850], // 3  ← incident starts here
-      [1.3081,103.8680], // 4  ← accident site
-      [1.3050,103.8600], // 5  ← incident ends here
-      [1.3081,103.8518]  // 6 Bedok Int
+    // BEFORE: Tampines Int down to just before the ECP accident zone (~70% of route)
+    beforeWp:[
+      [1.3521,103.9401],
+      [1.3350,103.9150],
+      [1.3181,103.9000],
+      [1.3100,103.8850]
     ],
-    splitIdx:3, splitEndIdx:5,
-    // Bypass: from wp[3] go via Bedok North Rd, rejoin at wp[5]
+    // INCIDENT: The ~1.5km blocked section on ECP (small portion)
+    incidentWp:[
+      [1.3100,103.8850],
+      [1.3081,103.8680],
+      [1.3050,103.8600]
+    ],
+    // AFTER: From accident clearance point to Bedok Int (~10% of route)
+    afterWp:[
+      [1.3050,103.8600],
+      [1.3081,103.8518]
+    ],
+    // BYPASS: Alternate road skirting the accident (Bedok North Rd)
     bypassWp:[
-      [1.3100,103.8850], // join point from normal route
-      [1.3160,103.8780],
-      [1.3140,103.8680],
-      [1.3080,103.8620],
-      [1.3050,103.8600]  // rejoin normal route
+      [1.3100,103.8850],
+      [1.3160,103.8760],
+      [1.3130,103.8660],
+      [1.3080,103.8610],
+      [1.3050,103.8600]
     ],
     inc:{lat:1.3081,lng:103.8680,type:'acc',emoji:'🚨',desc:'3-vehicle collision — 2 lanes blocked on ECP'},
+    skippedStops:['Bedok MRT (ECP stop)'],
     delay:18, pax:1240, buses:8, solveRoutes:6820,
-    altLabel:'Bedok North Rd bypass (avoids ECP accident)',
+    altLabel:'Bedok North Rd (~1.2km detour, avoids ECP accident)',
     kmOrig:14.2, kmAlt:11.8,
     fuelSave:18.40, ltaPenalty:162, passPenalty:0, overtime:0
   },
   '131':{
     color:'#7c3aed',
     label:'Bus 131 — Toa Payoh Int → Yishun Int (via CTE)',
-    wp:[
-      [1.3320,103.8480], // 0 Toa Payoh Int
-      [1.3480,103.8380], // 1  ← incident starts (CTE on-ramp)
-      [1.3620,103.8260], // 2  ← congestion zone
-      [1.3780,103.8200], // 3  ← incident ends (PIE junction)
-      [1.4100,103.8280], // 4
-      [1.4296,103.8353]  // 5 Yishun Int
+    // BEFORE: Toa Payoh Int to CTE on-ramp (~20% of route)
+    beforeWp:[
+      [1.3320,103.8480],
+      [1.3480,103.8380]
     ],
-    splitIdx:1, splitEndIdx:3,
-    // Bypass: Upper Thomson Rd off CTE, avoids Braddell–PIE congestion
+    // INCIDENT: The blocked CTE stretch — Braddell to PIE (~40% of route, but narrow corridor)
+    incidentWp:[
+      [1.3480,103.8380],
+      [1.3620,103.8260],
+      [1.3780,103.8200]
+    ],
+    // AFTER: PIE junction to Yishun Int (~40% of route)
+    afterWp:[
+      [1.3780,103.8200],
+      [1.4100,103.8280],
+      [1.4296,103.8353]
+    ],
+    // BYPASS: Upper Thomson Rd parallel to CTE — rejoins at PIE
     bypassWp:[
-      [1.3480,103.8380], // join
-      [1.3520,103.8260],
-      [1.3580,103.8140],
+      [1.3480,103.8380],
+      [1.3520,103.8240],
+      [1.3600,103.8130],
       [1.3700,103.8090],
-      [1.3780,103.8200]  // rejoin
+      [1.3780,103.8200]
     ],
     inc:{lat:1.3620,lng:103.8260,type:'trf',emoji:'🔴',desc:'CTE congestion 6km — Braddell to PIE junction'},
+    skippedStops:['Braddell Stn (CTE)','Bishan Jn (CTE)'],
     delay:22, pax:980, buses:7, solveRoutes:5940,
-    altLabel:'Upper Thomson Rd bypass (avoids CTE congestion)',
+    altLabel:'Upper Thomson Rd (~2.4km detour, avoids CTE congestion)',
     kmOrig:16.8, kmAlt:18.1,
     fuelSave:23.60, ltaPenalty:198, passPenalty:0, overtime:45
   },
   '900':{
     color:'#0891b2',
     label:'Bus 900 — Woodlands Int → City Hall',
-    wp:[
-      [1.4382,103.7890], // 0 Woodlands Int
-      [1.4200,103.7960], // 1  ← incident starts (Woodlands Ave 12)
-      [1.4044,103.7996], // 2  ← flood site
-      [1.3900,103.7900], // 3  ← incident ends
-      [1.3500,103.8000], // 4
-      [1.2897,103.8516]  // 5 City Hall
+    // BEFORE: Woodlands Int to start of flood zone (~15% of route)
+    beforeWp:[
+      [1.4382,103.7890],
+      [1.4200,103.7960]
     ],
-    splitIdx:1, splitEndIdx:3,
-    // Bypass: Admiralty Rd East, avoids flooded Woodlands Ave 12
+    // INCIDENT: Flooded Woodlands Ave 12 section (~15% of route)
+    incidentWp:[
+      [1.4200,103.7960],
+      [1.4044,103.7996],
+      [1.3900,103.7900]
+    ],
+    // AFTER: From flood clearance to City Hall (~70% of route)
+    afterWp:[
+      [1.3900,103.7900],
+      [1.3500,103.8000],
+      [1.2897,103.8516]
+    ],
+    // BYPASS: Admiralty Rd East loop — avoids flooded Woodlands Ave 12
     bypassWp:[
-      [1.4200,103.7960], // join
-      [1.4280,103.8060],
-      [1.4200,103.8180],
-      [1.4050,103.8100],
-      [1.3900,103.7900]  // rejoin
+      [1.4200,103.7960],
+      [1.4300,103.8060],
+      [1.4200,103.8160],
+      [1.4050,103.8080],
+      [1.3900,103.7900]
     ],
     inc:{lat:1.4044,lng:103.7996,type:'wth',emoji:'⛈️',desc:'Flash flooding — Woodlands Ave 12 partially submerged'},
+    skippedStops:['Woodlands Ave 12 stop','Marsiling Stn stop'],
     delay:25, pax:1450, buses:10, solveRoutes:8210,
-    altLabel:'Admiralty Rd East bypass (avoids flood zone)',
+    altLabel:'Admiralty Rd East (~1.8km detour, avoids flood zone)',
     kmOrig:19.4, kmAlt:21.2,
     fuelSave:16.10, ltaPenalty:225, passPenalty:290, overtime:68
   }
@@ -825,11 +854,13 @@ function addMarker(lat,lng,type,emoji,title,desc,lg){
   L.marker([lat,lng],{icon:eIcon(emoji,22)}).bindPopup(pop(emoji+' '+title,desc)).addTo(lg);
 }
 
+
 /* ==============================
-   OSRM road-following route
+   ROUTE DRAWING
+   Each ROUTES entry has explicit beforeWp, incidentWp, afterWp, bypassWp arrays.
+   OSRM is attempted for smoother road-following; raw waypoints used as fallback.
 ============================== */
-function fetchRoad(wp,cb){
-  // Need at least 2 distinct points
+function fetchRoad(wp, cb){
   if(!wp||wp.length<2){cb(wp||[]);return;}
   var coords=wp.map(function(p){return p[1]+','+p[0];}).join(';');
   fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson')
@@ -837,50 +868,43 @@ function fetchRoad(wp,cb){
     .then(function(d){
       if(d.routes&&d.routes[0]){
         cb(d.routes[0].geometry.coordinates.map(function(c){return[c[1],c[0]];}));
-      } else {cb(wp);}
-    }).catch(function(){cb(wp);});
+      } else { cb(wp); }
+    }).catch(function(){ cb(wp); });
 }
 
-/* Helper: split an OSRM path array into [before, incident, after] portions
-   using splitFracStart and splitFracEnd (0..1) along the path */
-function splitPath(path, fracStart, fracEnd){
-  var n=path.length;
-  var iS=Math.max(1, Math.floor(fracStart*n));
-  var iE=Math.min(n-1, Math.floor(fracEnd*n));
-  if(iS>=iE){ iS=Math.floor(n*0.3); iE=Math.floor(n*0.7); }
-  return {
-    before:  path.slice(0, iS+1),       // includes the split point
-    incident:path.slice(iS, iE+1),      // the blocked segment
-    after:   path.slice(iE)             // from end of incident to terminus
-  };
-}
-
-/* --- Load original route: fetch full OSRM path, draw as one solid coloured line --- */
+/* Load original route — draws the FULL route as one solid coloured line.
+   Full path = beforeWp + incidentWp (tail) + afterWp (tail), all stitched. */
 function loadRouteOnMap(k){
   var r=ROUTES[k];
-  fetchRoad(r.wp, function(fullPath){
-    routeData[k]={
-      fullPath:   fullPath,
-      origPl:     null,
-      beforePl:   null,
-      afterPl:    null,
-      incidentPl: null,
-      bypassPl:   null,
-      busMarkers: [],
-      // fractions along fullPath where incident zone starts/ends
-      // based on position of splitIdx/splitEndIdx in wp[]
-      fracStart: r.splitIdx / (r.wp.length-1),
-      fracEnd:   r.splitEndIdx / (r.wp.length-1)
-    };
+  // Stitch full path from explicit segments (join points shared, so slice to avoid duplicates)
+  var fullWp = r.beforeWp
+    .concat(r.incidentWp.slice(1))
+    .concat(r.afterWp.slice(1));
+
+  routeData[k]={
+    fullWp:     fullWp,
+    fullPath:   fullWp,   // will be replaced by OSRM path if available
+    origPl:     null,
+    beforePl:   null,
+    afterPl:    null,
+    incidentPl: null,
+    bypassPl:   null,
+    busMarkers: []
+  };
+
+  // Try OSRM for smoother road-following; fall back to raw waypoints
+  fetchRoad(fullWp, function(fullPath){
+    routeData[k].fullPath = fullPath;
     var pl=L.polyline(fullPath,{color:r.color,weight:5,opacity:.9,smoothFactor:1})
-      .bindPopup(pop('🚌 '+r.label,
-        '<span style="color:'+r.color+'">⚠ DISRUPTED</span> · '+r.buses+' buses · +'+r.delay+' min delay<br>'
-        +'<small>Click <b>⚡ cuOPT Re-route</b> to see bypass options</small>'))
+      .bindPopup(pop('\uD83D\uDE8C '+r.label,
+        '<span style="color:'+r.color+'">\u26A0 DISRUPTED</span> \u00B7 '+r.buses+' buses \u00B7 +'+r.delay+' min delay<br>'
+        +'<small>Click <b>\u26A1 cuOPT Re-route</b> to compute bypass</small>'))
       .addTo(lgRoutes);
     routeData[k].origPl=pl;
     spawnBuses(k, fullPath);
   });
 }
+
 
 /* --- Spawn animated buses --- */
 function spawnBuses(k,path){
@@ -1023,52 +1047,55 @@ window.doReroute=function(k){
         ov.classList.remove('show');
         rerouteDone[k]=true;
 
-        // Split the cached full path into before / incident / after
-        var segs=splitPath(rd.fullPath, rd.fracStart, rd.fracEnd);
+        // Use explicit pre-defined waypoint arrays for each segment.
+        // OSRM may improve rendering but raw waypoints guarantee correct splits.
+        var beforePath   = r.beforeWp;
+        var incidentPath = r.incidentWp;
+        var afterPath    = r.afterWp;
+        // bypassPath already fetched above
 
         // 1. Remove the original solid full line
         if(rd.origPl){ rd.origPl.remove(); rd.origPl=null; }
 
-        // 2. Draw BEFORE segment — solid, original colour (route is normal here)
-        rd.beforePl=L.polyline(segs.before,{
+        // 2. Draw BEFORE segment — solid original colour (unaffected part of route)
+        rd.beforePl=L.polyline(beforePath,{
           color:r.color, weight:5, opacity:.9, smoothFactor:1
-        }).bindPopup(pop('🚌 Bus '+k+' — Normal section','Unaffected portion of route'))
+        }).bindPopup(pop('\uD83D\uDE8C Bus '+k+' \u2014 Normal section','Unaffected route, operating normally'))
           .addTo(lgRoutes);
 
-        // 3. Draw AFTER segment — solid, original colour (route is normal here)
-        if(segs.after && segs.after.length>1){
-          rd.afterPl=L.polyline(segs.after,{
+        // 3. Draw AFTER segment — solid original colour (unaffected part of route)
+        if(afterPath && afterPath.length>1){
+          rd.afterPl=L.polyline(afterPath,{
             color:r.color, weight:5, opacity:.9, smoothFactor:1
-          }).bindPopup(pop('🚌 Bus '+k+' — Normal section','Unaffected portion of route'))
+          }).bindPopup(pop('\uD83D\uDE8C Bus '+k+' \u2014 Normal section','Unaffected route, operating normally'))
             .addTo(lgRoutes);
         }
 
-        // 4. Draw INCIDENT segment — same colour, DOTTED (shows the blocked portion of the route)
-        rd.incidentPl=L.polyline(segs.incident,{
+        // 4. Draw INCIDENT segment — same colour, DOTTED (the blocked road section)
+        rd.incidentPl=L.polyline(incidentPath,{
           color:r.color, weight:5, opacity:.75, dashArray:'9,7', smoothFactor:1
-        }).bindPopup(pop('⚠ Blocked — Bus '+k,
-          '<span style="color:'+r.color+'"><b>Dotted = disrupted section</b></span><br>'+r.inc.desc))
+        }).bindPopup(pop('\u26A0 Blocked \u2014 Bus '+k,
+          '<span style="color:'+r.color+'"><b>Dotted = disrupted/blocked section</b></span><br>'+r.inc.desc))
           .addTo(lgCuopt);
 
-        // 5. Draw BYPASS segment — same colour, DOTTED (proposed detour around incident)
+        // 5. Draw BYPASS segment — same colour, DOTTED (cuOPT proposed detour)
         rd.bypassPl=L.polyline(bypassPath,{
           color:r.color, weight:5, opacity:.95, dashArray:'14,7', smoothFactor:1
-        }).bindPopup(pop('⚡ cuOPT Bypass — Bus '+k,
+        }).bindPopup(pop('\u26A1 cuOPT Bypass \u2014 Bus '+k,
           '<b style="color:'+r.color+'">'+r.altLabel+'</b><br>'
           +'Dotted = proposed, not yet deployed<br>'
-          +'Saving <b>S$'+calcSaving(k)+'</b>/trip · Click Deploy to activate'))
+          +'Saving <b>S$'+calcSaving(k)+'</b>/trip \u00B7 Click Deploy to activate'))
           .addTo(lgCuopt);
 
-        // Store bypass path for deploy step
+        // Store for deploy step
         rd.bypassPath=bypassPath;
-        rd.incidentSeg=segs.incident;
 
-        // Zoom map to show the incident area + bypass side by side
-        var zonePts=segs.incident.concat(bypassPath);
-        map.fitBounds(L.latLngBounds(zonePts).pad(0.3), {animate:true, duration:1.2});
+        // Zoom to show only the incident zone + bypass (small area)
+        var zonePts=incidentPath.concat(bypassPath);
+        map.fitBounds(L.latLngBounds(zonePts).pad(0.35), {animate:true, duration:1.2});
 
-        // Migrate buses to travel via bypass instead of incident segment
-        var activePath=segs.before.concat(bypassPath).concat(segs.after||[]);
+        // Buses now travel: before → bypass → after
+        var activePath=beforePath.concat(bypassPath.slice(1)).concat(afterPath.length>1?afterPath.slice(1):[]);
         switchBusPath(k, activePath);
 
         // Update hints
