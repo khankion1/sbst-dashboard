@@ -366,11 +366,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:0 2
 
     <div class="legend">
       <div class="leg-t">Legend</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c65)"></div><span style="color:var(--c65)">●</span>&nbsp;Bus 65 route (accident)</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c131)"></div><span style="color:var(--c131)">●</span>&nbsp;Bus 131 route (congestion)</div>
-      <div class="leg-r"><div class="lline" style="background:var(--c900)"></div><span style="color:var(--c900)">●</span>&nbsp;Bus 900 route (weather)</div>
-      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #444;flex-shrink:0;opacity:.4"></div>Original (faded)</div>
-      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #76b900;flex-shrink:0"></div>cuOPT re-route</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c65)"></div><span style="color:var(--c65);font-size:10px">■</span>&nbsp;Bus 65 (accident)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c131)"></div><span style="color:var(--c131);font-size:10px">■</span>&nbsp;Bus 131 (congestion)</div>
+      <div class="leg-r"><div class="lline" style="background:var(--c900)"></div><span style="color:var(--c900);font-size:10px">■</span>&nbsp;Bus 900 (weather)</div>
+      <div style="border-top:1px solid var(--border);margin:6px 0"></div>
+      <div class="leg-r"><div class="lline" style="background:#aaa;opacity:.5"></div>Original route (faded solid)</div>
+      <div class="leg-r"><div style="width:22px;height:0;border-top:3px dashed #555;opacity:.6;flex-shrink:0"></div>cuOPT proposed (dashed)</div>
+      <div class="leg-r"><div class="lline" style="background:#16a34a"></div><span style="color:#16a34a;font-size:10px">✅</span>&nbsp;Deployed route (solid green)</div>
+      <div style="border-top:1px solid var(--border);margin:6px 0"></div>
       <div class="leg-r"><span style="font-size:13px">🚌</span>Live Bus (GPS)</div>
       <div class="leg-r"><div class="ldot" style="background:var(--danger)"></div>Accident zone</div>
       <div class="leg-r"><div class="ldot" style="background:#0ea5e9"></div>Weather zone</div>
@@ -645,11 +648,44 @@ function updateStats(){
 window.deployRoute=function(k){
   if(doneRoutes[k])return;
   doneRoutes[k]=true;
+
+  // --- MAP UPDATES ---
+  var r=ROUTES[k];
+  var rd=routeData[k];
+
+  // 1. Remove (hide) the faded original disrupted route line
+  if(rd&&rd.origPl){
+    rd.origPl.remove();
+  }
+
+  // 2. Convert the dashed cuOPT proposed line → solid green deployed route
+  if(rd&&rd.altPl){
+    rd.altPl.setStyle({
+      color:'#16a34a',   // solid green
+      weight:5,
+      opacity:1,
+      dashArray:null     // solid — no dash
+    });
+    rd.altPl.bindPopup(pop('✅ DEPLOYED — Bus '+k,
+      '<span style="color:#16a34a"><strong>cuOPT Active Route</strong></span><br>'
+      +r.altLabel+'<br>Saving S$'+calcSaving(k)+'/trip · Buses now on this path'));
+  }
+
+  // 3. Update map hint
+  document.getElementById('maphint').textContent='Bus '+k+' ✅ deployed — solid green = active cuOPT route';
+
+  // --- UI / CHAT UPDATES ---
   var btn=document.getElementById('btn-'+k);
   if(btn){btn.textContent='✅ Deployed';btn.classList.add('done');btn.disabled=true;}
+
   updateStats();
-  toast('Route Deployed ✅','Bus '+k+' re-route active. Saving S$'+calcSaving(k)+'/trip.','var(--accent2)');
-  addAi('✅ **Bus '+k+' re-route is now live.** Drivers notified via MDT. The dashed green line on the map shows the active cuOPT path.\n\nEstimated saving: **S$'+calcSaving(k)+'/trip**');
+  toast('Route Deployed ✅','Bus '+k+' active. Route is now solid green on the map.','var(--accent2)');
+  addAi(
+    '✅ <strong>Bus '+k+' re-route is now LIVE.</strong> '
+    +'On the map, the route is now shown as a <strong style="color:#16a34a">solid green line</strong> — the cuOPT path is active.\n\n'
+    +'Drivers notified via MDT. Estimated saving: <strong>S$'+calcSaving(k)+'/trip</strong>',
+    true
+  );
 };
 
 /* ==============================
@@ -884,17 +920,18 @@ window.doReroute=function(k){
         ov.classList.remove('show');
         rerouteDone[k]=true;
 
-        // Fade original route
+        // Keep original as solid faded line (same colour) — solid so user can compare vs dashed cuOPT
         if(routeData[k]&&routeData[k].origPl){
-          routeData[k].origPl.setStyle({color:r.color,weight:3,opacity:.3,dashArray:'5,5'});
-          routeData[k].origPl.bindPopup(pop('Original Route — Bus '+k,'<span style="color:#aaa">⚠ DISRUPTED (pre-cuOPT)</span>'));
+          routeData[k].origPl.setStyle({color:r.color,weight:4,opacity:.35,dashArray:null});
+          routeData[k].origPl.bindPopup(pop('Original Route — Bus '+k,'<span style="color:'+r.color+'">⚠ DISRUPTED (pre-cuOPT)</span><br><small>Faded solid = original path</small>'));
         }
 
-        // Draw cuOPT re-route: SAME colour, dashed
-        var cuoptPl=L.polyline(altPath,{color:r.color,weight:5,opacity:.95,dashArray:'12,8',smoothFactor:1})
-          .bindPopup(pop('⚡ cuOPT Re-route — Bus '+k,'<span style="color:#4a7c00"><strong>'+r.altLabel+'</strong></span><br>Saving S$'+calcSaving(k)+'/trip · GPU-optimised'))
+        // Draw cuOPT re-route: SAME colour, dashed = proposed but not yet deployed
+        var cuoptPl=L.polyline(altPath,{color:r.color,weight:5,opacity:.95,dashArray:'14,8',smoothFactor:1})
+          .bindPopup(pop('⚡ cuOPT Proposed Re-route — Bus '+k,'<strong style="color:'+r.color+'">'+r.altLabel+'</strong><br>Dashed = proposed, not yet deployed<br>Saving S$'+calcSaving(k)+'/trip'))
           .addTo(lgCuopt);
         routeData[k].altPl=cuoptPl;
+        routeData[k].altPath=altPath;
 
         // Fit map to show both
         var bounds=L.latLngBounds(altPath);
@@ -905,14 +942,16 @@ window.doReroute=function(k){
         switchBusPath(k,altPath);
 
         // Show savings in chat
-        document.getElementById('maphint').textContent='Bus '+k+' — solid=original, dashed=cuOPT re-route (same colour)';
-        toast('cuOPT Route Ready','Bus '+k+' re-route computed. Review in chat.','#76b900');
+        document.getElementById('maphint').textContent='Bus '+k+' — faded solid = original disrupted route | dashed = cuOPT proposed re-route';
+        toast('cuOPT Route Ready','Bus '+k+' re-route computed. Review savings & deploy in chat.','#76b900');
 
         // Add chat message with savings panel
         var msgEl=addAi(
           '✅ <strong>Bus '+k+' cuOPT re-route computed!</strong><br><br>'
-          +'On the map: <strong style="color:'+r.color+'">solid line = original disrupted route</strong>, <strong style="color:'+r.color+'">dashed line = cuOPT optimised route</strong> — same colour, easy to compare.<br><br>'
-          +'Here\'s the savings breakdown:',
+          +'On the map you can now see two lines in <strong style="color:'+r.color+'">'+r.color+' colour</strong>:<br>'
+          +'<span style="opacity:.5">━━━</span> <strong>Faded solid</strong> = original disrupted route<br>'
+          +'<span>╌╌╌</span> <strong>Dashed</strong> = cuOPT proposed re-route<br><br>'
+          +'Deploy below to convert the dashed line into a <strong style="color:#16a34a">solid green active route</strong>:',
           true
         );
         // Append savings panel to last bubble
